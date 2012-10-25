@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<title>Morphic!</title>
+		<script type="text/javascript" src="morphic.js"></script>
+		<script type="text/javascript">			
+
+			var	worldCanvas, world, hi, hint1, hint2;
+
+			window.onload = function () {
+				worldCanvas = document.getElementById('world');
+				world = new WorldMorph(worldCanvas);
+				world.isDevMode = true;
+				setInterval(loop, 50);
+
+				hi = new StringMorph(
+					'Hello, World!', 48, 'serif');
+				hi.isDraggable = true;
+				hi.isEditable = true;
+				hi.setPosition(new Point(275, 200));
+				world.add(hi);
+
+				hint1 = new StringMorph(
+					'right click...', 20, 'serif');
+				hint1.isDraggable = true;
+				hint1.isEditable = true;
+				hint1.setPosition(new Point(350, 270));
+				world.add(hint1);
+				
+				hint2 = new StringMorph(
+					'(or double touch)', 10, 'sans-serif');
+				hint2.isDraggable = true;
+				hint2.isEditable = true;
+				hint2.setPosition(hint1.bottomLeft());
+				world.add(hint2);
+			};
+
+			function loop() {
+				world.doOneCycle();
+			}
+		</script>
+	</head>
+
+	<body>
+		<canvas id="world" tabindex="1" width="800" height="600" style="position: absolute;">
+			<p>Your browser doesn't support canvas.</p>
+		</canvas>
+	</body>
+</html>
