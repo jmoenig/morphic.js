@@ -953,7 +953,7 @@
 /*global window, HTMLCanvasElement, getMinimumFontHeight, FileReader, Audio,
 FileList, getBlurredShadowSupport*/
 
-var morphicVersion = '2012-October-29';
+var morphicVersion = '2012-October-30';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -4441,7 +4441,7 @@ CursorMorph.prototype.gotoSlot = function (slot) {
         right,
         left;
 	this.slot = slot < 0 ? 0 : slot > length ? length : slot;
-	if (this.parent) {
+	if (this.parent && this.target.isScrollable) {
 		right = this.parent.right() - this.viewPadding;
 		left = this.parent.left() + this.viewPadding;
 		if (pos.x > right) {
@@ -6595,6 +6595,7 @@ StringMorph.prototype.init = function (
     this.blanksColor = new Color(180, 140, 140);
 
 	// additional properties for text-editing:
+    this.isScrollable = true; // scrolls into view when edited
 	this.currentlySelecting = false;
 	this.startMark = 0;
 	this.endMark = 0;
@@ -7090,6 +7091,7 @@ TextMorph.prototype.init = function (
 	this.receiver = null;
 
 	// additional properties for text-editing:
+    this.isScrollable = true; // scrolls into view when edited
 	this.currentlySelecting = false;
 	this.startMark = 0;
 	this.endMark = 0;
