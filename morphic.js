@@ -953,7 +953,7 @@
 /*global window, HTMLCanvasElement, getMinimumFontHeight, FileReader, Audio,
 FileList, getBlurredShadowSupport*/
 
-var morphicVersion = '2012-October-30';
+var morphicVersion = '2012-November-06';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -6328,6 +6328,14 @@ MenuMorph.prototype.init = function (target, title, environment, fontSize) {
 };
 
 MenuMorph.prototype.addItem = function (labelString, action, hint, color) {
+    /*
+    labelString is normally a single-line string. But it can also be one
+    of the following:
+    
+        * a multi-line string (containing line breaks)
+        * an icon (either a Morph or a Canvas)
+        * a tuple of format: [icon, string]
+    */
 	this.items.push([
         localize(labelString || 'close'),
         action || nop,
@@ -7916,7 +7924,7 @@ MenuItemMorph.uber = TriggerMorph.prototype;
 function MenuItemMorph(
 	target,
 	action,
-	labelString,
+	labelString, // can also be a Morph or a Canvas or a tuple: [icon, string]
 	fontSize,
 	fontStyle,
 	environment,
@@ -7936,25 +7944,48 @@ function MenuItemMorph(
 }
 
 MenuItemMorph.prototype.createLabel = function () {
-	var np;
+	var icon, lbl, np;
 	if (this.label !== null) {
 		this.label.destroy();
-	}
-	this.label = new StringMorph(
-		this.labelString,
-		this.fontSize,
-		this.fontStyle,
-        false, // bold
-        false, // italic
-        false, // numeric
-        null, // shadow offset
-        null, // shadow color
-        this.labelColor
-	);
+    }
+    if (isString(this.labelString)) {
+        this.label = this.createLabelString(this.labelString);
+    } else if (this.labelString instanceof Array) {
+        // assume its pattern is: [icon, string] 
+        this.label = new Morph();
+        this.label.alpha = 0; // transparent
+        this.label.add(icon = this.createIcon(this.labelString[0]));
+        this.label.add(lbl = this.createLabelString(this.labelString[1]));
+        lbl.setCenter(icon.center());
+        lbl.setLeft(icon.right() + 4);
+        this.label.bounds = (icon.bounds.merge(lbl.bounds));
+        this.label.drawNew();
+    } else { // assume it's either a Morph or a Canvas
+        this.label = this.createIcon(this.labelString);
+    }
 	this.silentSetExtent(this.label.extent().add(new Point(8, 0)));
 	np = this.position().add(new Point(4, 0));
 	this.label.bounds = np.extent(this.label.extent());
 	this.add(this.label);
+};
+
+MenuItemMorph.prototype.createIcon = function (source) {
+    // source can be either a Morph or an HTMLCanvasElement
+    var icon = new Morph();
+    icon.image = source instanceof Morph ? source.fullImage() : source;
+    icon.silentSetWidth(icon.image.width);
+    icon.silentSetHeight(icon.image.height);
+    return icon;
+};
+
+MenuItemMorph.prototype.createLabelString = function (string) {
+    var lbl = new TextMorph(
+        string,
+        this.fontSize,
+        this.fontStyle
+    );
+    lbl.setColor(this.labelColor);
+    return lbl;
 };
 
 // MenuItemMorph events:
