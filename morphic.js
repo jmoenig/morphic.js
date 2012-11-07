@@ -47,6 +47,7 @@
 			(e) keyboard events
 			(f) resize event
             (g) combined mouse-keyboard events
+            (h) text editing events
 		(4) stepping
 		(5) creating new kinds of morphs
 		(6) development and user modes
@@ -679,6 +680,66 @@
 	Once the key is released by the user it reverts to null.
 
 
+    (h) text editing events
+    -----------------------
+    Much of Morphic's "liveliness" comes out of allowing text elements
+    (instances of either single-lined StringMorph or multi-lined TextMorph)
+    to be directly manipulated and edited by users. This requires other
+    objects which may have an interest in the text element's state to react
+    appropriately. Therefore text elements and their manipulators emit
+    a stream of events, mostly by "bubbling" them up the text element's
+    owner chain. Text elements' parents are notified about the following
+    events:
+    
+    Whenever the user presses a key on the keyboard while a text element
+    is being edited, a
+    
+        reactToKeystroke(event)
+
+    is escalated up its parent chain, the "event" parameter being the
+    original one received by the World.
+    
+    Once the user has completed the edit, the following events are
+    dispatched:
+    
+        accept() - <enter> was pressed on a single line of text
+        cancel() - <esc> was pressed on any text element
+
+    Note that "accept" only gets triggered by single-line texte elements,
+    as the <enter> key is used to insert line breaks in multi-line
+    elements. Therefore, whenever a text edit is terminated by the user
+    (accepted, cancelled or otherwise), 
+
+        reactToEdit(StringOrTextMorph)
+
+    is triggered.
+
+    If the MorphicPreference's
+    
+        useSliderForInput
+    
+    setting is turned on, a slider is popped up underneath the currently
+    edited text element letting the user insert numbers out of the given
+    slider range. Whenever this happens, i.e. whenever the slider is moved
+    or while the slider button is pressed, a stream of
+
+        reactToSliderEdit(StringOrTextMorph)
+
+    events is dispatched, allowing for "Bret-Victor" style "live coding"
+    applications.
+
+    In addition to user-initiated events text elements also emit
+    change notifications to their direct parents whenever their drawNew()
+    method is invoked. That way complex Morphs containing text elements
+    get a chance to react if something about the embedded text has been
+    modified programmatically. These events are:
+    
+        layoutChanged() - sent from instances of TextMorph
+        fixLayout() - sent from instances of StringMorph
+
+    they are different so that Morphs which contain both multi-line and
+    single-line text elements can hold them apart.
+
 
 	(4) stepping
 	------------
@@ -944,6 +1005,7 @@
 	Nathan Dinsmore contributed mouse wheel scrolling, cached
 	background texture handling and countless bug fixes.
 	Ian Reynolds contributed backspace key handling for Chrome.
+    Davide Della Casa contributed performance optimizations for Firefox.
 
 	- Jens Mönig
 */
@@ -953,7 +1015,7 @@
 /*global window, HTMLCanvasElement, getMinimumFontHeight, FileReader, Audio,
 FileList, getBlurredShadowSupport*/
 
-var morphicVersion = '2012-November-06';
+var morphicVersion = '2012-November-07';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -10268,6 +10330,10 @@ WorldMorph.prototype.slide = function (aStringOrTextMorph) {
 		aStringOrTextMorph.text = Math.round(num).toString();
 		aStringOrTextMorph.drawNew();
 		aStringOrTextMorph.changed();
+        aStringOrTextMorph.escalateEvent(
+            'reactToSliderEdit',
+            aStringOrTextMorph
+        );
 	};
 	menu.items.push(slider);
 	menu.popup(this, aStringOrTextMorph.bottomLeft().add(new Point(0, 5)));
