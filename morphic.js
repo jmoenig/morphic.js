@@ -596,9 +596,9 @@
 	events to interested Morphs at the mouse pointer.
     
     if none of the above content types can be determined, the file contents
-    are dispatched as binary string to interested Morphs:
+    is dispatched as an ArrayBuffer to interested Morphs:
 
-        droppedBinary(aBinaryString, name)
+        droppedBinary(anArrayBuffer, name)
 
 
 	(e) keyboard events
@@ -9482,7 +9482,7 @@ HandMorph.prototype.processDrop = function (event) {
         frd.onloadend = function (e) {
             target.droppedBinary(e.target.result, aFile.name);
         };
-        frd.readAsBinaryString(aFile);
+        frd.readAsArrayBuffer(aFile);
     }
 
     function parseImgURL(html) {
