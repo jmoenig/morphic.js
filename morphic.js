@@ -594,6 +594,11 @@
 		droppedText(aString, name)
 
 	events to interested Morphs at the mouse pointer.
+    
+    if none of the above content types can be determined, the file contents
+    are dispatched as binary string to interested Morphs:
+
+        droppedBinary(aBinaryString, name)
 
 
 	(e) keyboard events
@@ -1015,7 +1020,7 @@
 /*global window, HTMLCanvasElement, getMinimumFontHeight, FileReader, Audio,
 FileList, getBlurredShadowSupport*/
 
-var morphicVersion = '2012-November-07';
+var morphicVersion = '2012-November-16';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -9469,6 +9474,17 @@ HandMorph.prototype.processDrop = function (event) {
         frd.readAsText(aFile);
     }
 
+    function readBinary(aFile) {
+        var frd = new FileReader();
+        while (!target.droppedBinary) {
+            target = target.parent;
+        }
+        frd.onloadend = function (e) {
+            target.droppedBinary(e.target.result, aFile.name);
+        };
+        frd.readAsBinaryString(aFile);
+    }
+
     function parseImgURL(html) {
         var url = '',
             i,
@@ -9495,6 +9511,8 @@ HandMorph.prototype.processDrop = function (event) {
                 readAudio(file);
             } else if (file.type.indexOf("text") === 0) {
                 readText(file);
+            } else { // assume it's meant to be binary
+                readBinary(file);
             }
         }
     } else if (txt) {
