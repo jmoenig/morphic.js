@@ -1020,7 +1020,7 @@
 /*global window, HTMLCanvasElement, getMinimumFontHeight, FileReader, Audio,
 FileList, getBlurredShadowSupport*/
 
-var morphicVersion = '2012-November-16';
+var morphicVersion = '2012-November-19';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -8038,8 +8038,19 @@ MenuItemMorph.prototype.createLabel = function () {
 
 MenuItemMorph.prototype.createIcon = function (source) {
     // source can be either a Morph or an HTMLCanvasElement
-    var icon = new Morph();
+    var icon = new Morph(),
+        src;
     icon.image = source instanceof Morph ? source.fullImage() : source;
+    // adjust shadow dimensions
+    if (source instanceof Morph && source.getShadow()) {
+        src = icon.image;
+        icon.image = newCanvas(
+            source.fullBounds().extent().subtract(
+                this.shadowBlur * (useBlurredShadows ? 1 : 2)
+            )
+        );
+        icon.image.getContext('2d').drawImage(src, 0, 0);
+    }
     icon.silentSetWidth(icon.image.width);
     icon.silentSetHeight(icon.image.height);
     return icon;
