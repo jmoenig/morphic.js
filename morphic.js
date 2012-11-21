@@ -1020,7 +1020,7 @@
 /*global window, HTMLCanvasElement, getMinimumFontHeight, FileReader, Audio,
 FileList, getBlurredShadowSupport*/
 
-var morphicVersion = '2012-November-19';
+var morphicVersion = '2012-November-21';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -10372,6 +10372,7 @@ WorldMorph.prototype.stopEditing = function () {
 	if (this.cursor) {
 		this.lastEditedText = this.cursor.target;
 		this.cursor.destroy();
+        this.cursor = null;
         this.lastEditedText.escalateEvent('reactToEdit', this.lastEditedText);
 	}
 	this.keyboardReceiver = null;
