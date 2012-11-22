@@ -1020,7 +1020,7 @@
 /*global window, HTMLCanvasElement, getMinimumFontHeight, FileReader, Audio,
 FileList, getBlurredShadowSupport*/
 
-var morphicVersion = '2012-November-21';
+var morphicVersion = '2012-November-22';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -4397,27 +4397,22 @@ CursorMorph.prototype.processKeyPress = function (event) {
 		this.insert('%');
 		return null;
 	}
-	var navigation = [8, 13, 18, 27, 35, 36, 37, 38, 40];
 	if (event.keyCode) { // Opera doesn't support charCode
-		if (!contains(navigation, event.keyCode)) {
-			if (event.ctrlKey) {
-				this.ctrl(event.keyCode);
-			} else if (event.metaKey) {
-                this.cmd(event.keyCode);
-            } else {
-				this.insert(String.fromCharCode(event.keyCode));
-			}
-		}
+        if (event.ctrlKey) {
+            this.ctrl(event.keyCode);
+        } else if (event.metaKey) {
+            this.cmd(event.keyCode);
+        } else {
+            this.insert(String.fromCharCode(event.keyCode));
+        }
 	} else if (event.charCode) { // all other browsers
-		if (!contains(navigation, event.charCode)) {
-			if (event.ctrlKey) {
-				this.ctrl(event.charCode);
-			} else if (event.metaKey) {
-                this.cmd(event.keyCode);
-            } else {
-				this.insert(String.fromCharCode(event.charCode));
-			}
-		}
+        if (event.ctrlKey) {
+            this.ctrl(event.charCode);
+        } else if (event.metaKey) {
+            this.cmd(event.keyCode);
+        } else {
+            this.insert(String.fromCharCode(event.charCode));
+        }
 	}
     // notify target's parent of key event
     this.target.escalateEvent('reactToKeystroke', event);
