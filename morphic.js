@@ -1020,7 +1020,7 @@
 /*global window, HTMLCanvasElement, getMinimumFontHeight, FileReader, Audio,
 FileList, getBlurredShadowSupport*/
 
-var morphicVersion = '2012-November-26';
+var morphicVersion = '2012-November-27';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -2105,6 +2105,8 @@ var ColorPickerMorph;
 var SliderMorph;
 var ScrollFrameMorph;
 var InspectorMorph;
+var StringMorph;
+var TextMorph;
 
 // Morph inherits from Node:
 
@@ -3457,7 +3459,9 @@ Morph.prototype.numericalSetters = function () {
 
 Morph.prototype.allEntryFields = function () {
 	return this.allChildren().filter(function (each) {
-		return each.isEditable;
+		return each.isEditable &&
+            (each instanceof StringMorph ||
+                each instanceof TextMorph);
 	});
 };
 
@@ -3465,22 +3469,23 @@ Morph.prototype.nextEntryField = function (current) {
 	var	fields = this.allEntryFields(),
 		idx = fields.indexOf(current);
 	if (idx !== -1) {
-		if (fields.length > (idx - 1)) {
+		if (fields.length > idx + 1) {
 			return fields[idx + 1];
 		}
-        return fields[0];
 	}
+    return fields[0];
 };
 
 Morph.prototype.previousEntryField = function (current) {
 	var	fields = this.allEntryFields(),
 		idx = fields.indexOf(current);
 	if (idx !== -1) {
-		if ((idx - 1) > fields.length) {
+		if (idx > 0) {
 			return fields[idx - 1];
 		}
-        return fields[fields.length + 1];
+        return fields[fields.length - 1];
 	}
+    return fields[0];
 };
 
 Morph.prototype.tab = function (editField) {
@@ -4346,7 +4351,6 @@ BlinkerMorph.prototype.step = function () {
 
 // CursorMorph: referenced constructors
 
-var StringMorph;
 var CursorMorph;
 
 // CursorMorph inherits from BlinkerMorph:
@@ -4384,7 +4388,7 @@ CursorMorph.prototype.init = function (aStringOrTextMorph) {
 // CursorMorph event processing:
 
 CursorMorph.prototype.processKeyPress = function (event) {
-	// this.inspectKeyEvent(event);
+	//this.inspectKeyEvent(event);
 	if (this.keyDownEventUsed) {
 		this.keyDownEventUsed = false;
 		return null;
@@ -4403,7 +4407,10 @@ CursorMorph.prototype.processKeyPress = function (event) {
         } else if (event.metaKey) {
             this.cmd(event.keyCode);
         } else {
-            this.insert(String.fromCharCode(event.keyCode));
+            this.insert(
+                String.fromCharCode(event.keyCode),
+                event.shiftKey
+            );
         }
 	} else if (event.charCode) { // all other browsers
         if (event.ctrlKey) {
@@ -4411,7 +4418,10 @@ CursorMorph.prototype.processKeyPress = function (event) {
         } else if (event.metaKey) {
             this.cmd(event.keyCode);
         } else {
-            this.insert(String.fromCharCode(event.charCode));
+            this.insert(
+                String.fromCharCode(event.charCode),
+                event.shiftKey
+            );
         }
 	}
     // notify target's parent of key event
@@ -4585,9 +4595,12 @@ CursorMorph.prototype.cancel = function () {
 	this.escalateEvent('cancel', null);
 };
 
-CursorMorph.prototype.insert = function (aChar) {
+CursorMorph.prototype.insert = function (aChar, shiftKey) {
 	var text;
     if (aChar === '\u0009') {
+        if (shiftKey) {
+            return this.target.backTab(this.target);
+        }
 		return this.target.tab(this.target);
 	}
 	if (!this.target.isNumeric ||
@@ -4668,6 +4681,8 @@ CursorMorph.prototype.inspectKeyEvent = function (event) {
 			event.charCode.toString() +
 			'\nkeyCode: ' +
 			event.keyCode.toString() +
+			'\nshiftKey: ' +
+			event.shiftKey.toString() +
 			'\naltKey: ' +
 			event.altKey.toString() +
 			'\nctrlKey: ' +
@@ -4890,7 +4905,6 @@ BoxMorph.prototype.numericalSetters = function () {
 // SpeechBubbleMorph: referenced constructors
 
 var SpeechBubbleMorph;
-var TextMorph;
 
 // SpeechBubbleMorph inherits from BoxMorph:
 
@@ -10057,16 +10071,20 @@ WorldMorph.prototype.droppedImage = function () {
 
 WorldMorph.prototype.nextTab = function (editField) {
 	var	next = this.nextEntryField(editField);
-	editField.clearSelection();
-	next.selectAll();
-	next.edit();
+    if (next) {
+        editField.clearSelection();
+        next.selectAll();
+        next.edit();
+    }
 };
 
 WorldMorph.prototype.previousTab = function (editField) {
 	var	prev = this.previousEntryField(editField);
-	editField.clearSelection();
-	prev.selectAll();
-	prev.edit();
+    if (prev) {
+        editField.clearSelection();
+        prev.selectAll();
+        prev.edit();
+    }
 };
 
 // WorldMorph menu:
