@@ -1020,7 +1020,7 @@
 /*global window, HTMLCanvasElement, getMinimumFontHeight, FileReader, Audio,
 FileList, getBlurredShadowSupport*/
 
-var morphicVersion = '2012-November-27';
+var morphicVersion = '2012-November-28';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -4939,6 +4939,7 @@ SpeechBubbleMorph.prototype.init = function (
 	this.contents = contents || '';
     this.padding = padding || 0; // additional vertical pixels
     this.isThought = isThought || false; // draw "think" bubble
+    this.isClickable = false;
 	SpeechBubbleMorph.uber.init.call(
 		this,
 		edge || 6,
@@ -4951,7 +4952,7 @@ SpeechBubbleMorph.prototype.init = function (
 
 // SpeechBubbleMorph invoking:
 
-SpeechBubbleMorph.prototype.popUp = function (world, pos) {
+SpeechBubbleMorph.prototype.popUp = function (world, pos, isClickable) {
 	this.drawNew();
 	this.setPosition(pos.subtract(new Point(0, this.height())));
 	this.addShadow(new Point(2, 2), 80);
@@ -4961,9 +4962,13 @@ SpeechBubbleMorph.prototype.popUp = function (world, pos) {
 	world.hand.destroyTemporaries();
 	world.hand.temporaries.push(this);
 
-	this.mouseEnter = function () {
-		this.destroy();
-	};
+    if (!isClickable) {
+        this.mouseEnter = function () {
+            this.destroy();
+        };
+    } else {
+        this.isClickable = true;
+    }
 };
 
 // SpeechBubbleMorph drawing:
@@ -5185,6 +5190,14 @@ SpeechBubbleMorph.prototype.shadowImageBlurred = function (off, color) {
         blur - offset.y
     );
     return sha;
+};
+
+// SpeechBubbleMorph resizing
+
+SpeechBubbleMorph.prototype.fixLayout = function () {
+    this.removeShadow();
+    this.drawNew();
+    this.addShadow(new Point(2, 2), 80);
 };
 
 // CircleBoxMorph //////////////////////////////////////////////////////
@@ -9621,10 +9634,14 @@ HandMorph.prototype.destroyTemporaries = function () {
 	that it needs to remove them. The primary purpose of temporaries is
 	to display tools tips of speech bubble help.
 */
+    var myself = this;
 	this.temporaries.forEach(function (morph) {
-		morph.destroy();
+        if (!(morph.isClickable
+                && morph.bounds.containsPoint(myself.position()))) {
+            morph.destroy();
+            myself.temporaries.splice(myself.temporaries.indexOf(morph), 1);
+        }
 	});
-	this.temporaries = [];
 };
 
 // HandMorph dragging optimization
