@@ -1093,6 +1093,17 @@ function detect(list, predicate) {
 	return null;
 }
 
+function sizeOf(object) {
+    // answer the number of own properties
+    var size = 0, key;
+    for (key in object) {
+        if (object.hasOwnProperty(key)) {
+            size += 1;
+        }
+    }
+    return size;
+}
+
 function isString(target) {
 	return typeof target === 'string' || target instanceof String;
 }
