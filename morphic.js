@@ -7175,12 +7175,10 @@ StringMorph.prototype.deleteSelection = function () {
 };
 
 StringMorph.prototype.selectAll = function () {
-	if (this.mouseDownLeft) { // make sure selecting is enabled
-		this.startMark = 0;
-		this.endMark = this.text.length;
-		this.drawNew();
-		this.changed();
-	}
+    this.startMark = 0;
+    this.endMark = this.text.length;
+    this.drawNew();
+    this.changed();
 };
 
 StringMorph.prototype.mouseClickLeft = function (pos) {
@@ -7221,13 +7219,15 @@ StringMorph.prototype.enableSelecting = function () {
 };
 
 StringMorph.prototype.disableSelecting = function () {
-	delete this.mouseDownLeft;
+	this.mouseDownLeft = function () {
+		this.clearSelection();
+	};
 	delete this.mouseMove;
 };
 
-// TextMorph ///////////////////////////////////////////////////////////
+// TextMorph ////////////////////////////////////////////////////////////////
 
-// I am a multi-line, word-wrapping String
+// I am a multi-line, word-wrapping String, quasi-inheriting from StringMorph
 
 // TextMorph inherits from Morph:
 
@@ -7316,20 +7316,7 @@ TextMorph.prototype.toString = function () {
 	return 'a TextMorph' + '("' + this.text.slice(0, 30) + '...")';
 };
 
-TextMorph.prototype.font = function () {
-	// answer a font string, e.g. 'bold italic 12px sans-serif'
-	var font = '';
-	if (this.isBold) {
-		font = font + 'bold ';
-	}
-	if (this.isItalic) {
-		font = font + 'italic ';
-	}
-	return font +
-        this.fontSize + 'px ' +
-        (this.fontName ? this.fontName + ', ' : '') +
-        this.fontStyle;
-};
+TextMorph.prototype.font = StringMorph.prototype.font;
 
 TextMorph.prototype.parse = function () {
 	var	myself = this,
@@ -7597,91 +7584,28 @@ TextMorph.prototype.endOfLine = function (slot) {
 
 // TextMorph editing:
 
-TextMorph.prototype.edit = function () {
-	this.root().edit(this);
-};
+TextMorph.prototype.edit = StringMorph.prototype.edit;
 
-TextMorph.prototype.selection = function () {
-	var start, stop;
-	start = Math.min(this.startMark, this.endMark);
-	stop = Math.max(this.startMark, this.endMark);
-	return this.text.slice(start, stop);
-};
+TextMorph.prototype.selection = StringMorph.prototype.selection;
 
-TextMorph.prototype.selectionStartSlot = function () {
-	return Math.min(this.startMark, this.endMark);
-};
+TextMorph.prototype.selectionStartSlot
+    = StringMorph.prototype.selectionStartSlot;
 
-TextMorph.prototype.clearSelection = function () {
-	this.currentlySelecting = false;
-	this.startMark = 0;
-	this.endMark = 0;
-	this.drawNew();
-	this.changed();
-};
+TextMorph.prototype.clearSelection = StringMorph.prototype.clearSelection;
 
-TextMorph.prototype.deleteSelection = function () {
-	var start, stop, text;
-	text = this.text;
-	start = Math.min(this.startMark, this.endMark);
-	stop = Math.max(this.startMark, this.endMark);
-	this.text = text.slice(0, start) + text.slice(stop);
-	this.changed();
-	this.clearSelection();
-};
+TextMorph.prototype.deleteSelection = StringMorph.prototype.deleteSelection;
 
-TextMorph.prototype.selectAll = function () {
-	this.startMark = 0;
-	this.endMark = this.text.length;
-	this.drawNew();
-	this.changed();
-};
+TextMorph.prototype.selectAll = StringMorph.prototype.selectAll;
+
+TextMorph.prototype.mouseClickLeft = StringMorph.prototype.mouseClickLeft;
+
+TextMorph.prototype.enableSelecting = StringMorph.prototype.enableSelecting;
+
+TextMorph.prototype.disableSelecting = StringMorph.prototype.disableSelecting;
 
 TextMorph.prototype.selectAllAndEdit = function () {
 	this.edit();
 	this.selectAll();
-};
-
-TextMorph.prototype.mouseClickLeft = function (pos) {
-	if (this.isEditable) {
-		if (!this.currentlySelecting) {
-			this.edit();
-		}
-		this.root().cursor.gotoPos(pos);
-		this.currentlySelecting = false;
-	} else {
-		this.escalateEvent('mouseClickLeft', pos);
-	}
-};
-
-TextMorph.prototype.enableSelecting = function () {
-	this.mouseDownLeft = function (pos) {
-		this.clearSelection();
-		if (this.isEditable && (!this.isDraggable)) {
-			this.edit();
-			this.root().cursor.gotoPos(pos);
-			this.startMark = this.slotAt(pos);
-			this.endMark = this.startMark;
-			this.currentlySelecting = true;
-		}
-	};
-	this.mouseMove = function (pos) {
-		if (this.isEditable &&
-				this.currentlySelecting &&
-				(!this.isDraggable)) {
-			var newMark = this.slotAt(pos);
-			if (newMark !== this.endMark) {
-				this.endMark = newMark;
-				this.drawNew();
-				this.changed();
-			}
-		}
-	};
-};
-
-TextMorph.prototype.disableSelecting = function () {
-	delete this.mouseDownLeft;
-	delete this.mouseMove;
 };
 
 // TextMorph menus:
@@ -7735,16 +7659,6 @@ TextMorph.prototype.developersMenu = function () {
 	return menu;
 };
 
-TextMorph.prototype.toggleIsDraggable = function () {
-	// for context menu demo purposes
-	this.isDraggable = !this.isDraggable;
-	if (this.isDraggable) {
-		this.disableSelecting();
-	} else {
-		this.enableSelecting();
-	}
-};
-
 TextMorph.prototype.setAlignmentToLeft = function () {
 	this.alignment = 'left';
 	this.drawNew();
@@ -7763,70 +7677,22 @@ TextMorph.prototype.setAlignmentToCenter = function () {
 	this.changed();
 };
 
-TextMorph.prototype.toggleWeight = function () {
-	this.isBold = !this.isBold;
-	this.changed();
-	this.drawNew();
-	this.changed();
-};
+TextMorph.prototype.toggleIsDraggable
+    = StringMorph.prototype.toggleIsDraggable;
 
-TextMorph.prototype.toggleItalic = function () {
-	this.isItalic = !this.isItalic;
-	this.changed();
-	this.drawNew();
-	this.changed();
-};
+TextMorph.prototype.toggleWeight = StringMorph.prototype.toggleWeight;
 
-TextMorph.prototype.setSerif = function () {
-	this.fontStyle = 'serif';
-	this.changed();
-	this.drawNew();
-	this.changed();
-};
+TextMorph.prototype.toggleItalic = StringMorph.prototype.toggleItalic;
 
-TextMorph.prototype.setSansSerif = function () {
-	this.fontStyle = 'sans-serif';
-	this.changed();
-	this.drawNew();
-	this.changed();
-};
+TextMorph.prototype.setSerif = StringMorph.prototype.setSerif;
 
-TextMorph.prototype.setText = function (size) {
-	// for context menu demo purposes
-	this.text = Math.round(size).toString();
-	this.changed();
-	this.drawNew();
-	this.changed();
-};
+TextMorph.prototype.setSansSerif = StringMorph.prototype.setSansSerif;
 
-TextMorph.prototype.setFontSize = function (size) {
-	// for context menu demo purposes
-	var newSize;
-	if (typeof size === 'number') {
-		this.fontSize = Math.round(Math.min(Math.max(size, 4), 500));
-	} else {
-		newSize = parseFloat(size);
-		if (!isNaN(newSize)) {
-			this.fontSize = Math.round(
-				Math.min(Math.max(newSize, 4), 500)
-			);
-		}
-	}
-	this.changed();
-	this.drawNew();
-	this.changed();
-};
+TextMorph.prototype.setText = StringMorph.prototype.setText;
 
-TextMorph.prototype.numericalSetters = function () {
-	// for context menu demo purposes
-	return [
-		'setLeft',
-		'setTop',
-		'setAlphaScaled',
-		'setFontSize',
-		'setText'
-	];
-};
+TextMorph.prototype.setFontSize = StringMorph.prototype.setFontSize;
+
+TextMorph.prototype.numericalSetters = StringMorph.prototype.numericalSetters;
 
 // TextMorph evaluation:
 
