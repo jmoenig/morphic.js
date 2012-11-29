@@ -4441,6 +4441,7 @@ CursorMorph.prototype.processKeyPress = function (event) {
 
 CursorMorph.prototype.processKeyDown = function (event) {
 	// this.inspectKeyEvent(event);
+    var shift = event.shiftKey;
 	this.keyDownEventUsed = false;
 	if (event.ctrlKey) {
         this.ctrl(event.keyCode);
@@ -4457,27 +4458,27 @@ CursorMorph.prototype.processKeyDown = function (event) {
 
 	switch (event.keyCode) {
 	case 37:
-		this.goLeft();
+		this.goLeft(shift);
 		this.keyDownEventUsed = true;
 		break;
 	case 39:
-		this.goRight();
+		this.goRight(shift);
 		this.keyDownEventUsed = true;
 		break;
 	case 38:
-		this.goUp();
+		this.goUp(shift);
 		this.keyDownEventUsed = true;
 		break;
 	case 40:
-		this.goDown();
+		this.goDown(shift);
 		this.keyDownEventUsed = true;
 		break;
 	case 36:
-		this.goHome();
+		this.goHome(shift);
 		this.keyDownEventUsed = true;
 		break;
 	case 35:
-		this.goEnd();
+		this.goEnd(shift);
 		this.keyDownEventUsed = true;
 		break;
 	case 46:
@@ -4549,40 +4550,64 @@ CursorMorph.prototype.gotoSlot = function (slot) {
 	}
 };
 
-CursorMorph.prototype.goLeft = function () {
-	this.target.clearSelection();
+CursorMorph.prototype.goLeft = function (shift) {
+	this.updateSelection(shift);
 	this.gotoSlot(this.slot - 1);
+	this.updateSelection(shift);
 };
 
-CursorMorph.prototype.goRight = function () {
-	this.target.clearSelection();
+CursorMorph.prototype.goRight = function (shift) {
+	this.updateSelection(shift);
 	this.gotoSlot(this.slot + 1);
+	this.updateSelection(shift);
 };
 
-CursorMorph.prototype.goUp = function () {
-	this.target.clearSelection();
+CursorMorph.prototype.goUp = function (shift) {
+	this.updateSelection(shift);
 	this.gotoSlot(this.target.upFrom(this.slot));
+	this.updateSelection(shift);
 };
 
-CursorMorph.prototype.goDown = function () {
-	this.target.clearSelection();
+CursorMorph.prototype.goDown = function (shift) {
+	this.updateSelection(shift);
 	this.gotoSlot(this.target.downFrom(this.slot));
+	this.updateSelection(shift);
 };
 
-CursorMorph.prototype.goHome = function () {
-	this.target.clearSelection();
+CursorMorph.prototype.goHome = function (shift) {
+	this.updateSelection(shift);
 	this.gotoSlot(this.target.startOfLine(this.slot));
+	this.updateSelection(shift);
 };
 
-CursorMorph.prototype.goEnd = function () {
-	this.target.clearSelection();
+CursorMorph.prototype.goEnd = function (shift) {
+	this.updateSelection(shift);
 	this.gotoSlot(this.target.endOfLine(this.slot));
+	this.updateSelection(shift);
 };
 
 CursorMorph.prototype.gotoPos = function (aPoint) {
 	this.gotoSlot(this.target.slotAt(aPoint));
 	this.show();
 };
+
+// CursorMorph selecting:
+
+CursorMorph.prototype.updateSelection = function (shift) {
+    if (shift) {
+        if (!this.target.endMark && !this.target.startMark) {
+            this.target.startMark = this.slot;
+            this.target.endMark = this.slot;
+        } else if (this.target.endMark !== this.slot) {
+            this.target.endMark = this.slot;
+            this.target.drawNew();
+            this.target.changed();
+        }
+    } else {
+        this.target.clearSelection();
+    }
+};
+
 
 // CursorMorph editing:
 
