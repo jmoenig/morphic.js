@@ -1020,7 +1020,7 @@
 /*global window, HTMLCanvasElement, getMinimumFontHeight, FileReader, Audio,
 FileList, getBlurredShadowSupport*/
 
-var morphicVersion = '2012-November-28';
+var morphicVersion = '2012-November-29';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -4585,14 +4585,19 @@ CursorMorph.prototype.accept = function () {
 
 CursorMorph.prototype.cancel = function () {
 	var	world = this.root();
+    this.undo();
 	if (world) {
 		world.stopEditing();
 	}
+	this.escalateEvent('cancel', null);
+};
+
+CursorMorph.prototype.undo = function () {
 	this.target.text = this.originalContents;
 	this.target.changed();
 	this.target.drawNew();
 	this.target.changed();
-	this.escalateEvent('cancel', null);
+    this.gotoSlot(0);
 };
 
 CursorMorph.prototype.insert = function (aChar, shiftKey) {
@@ -4624,6 +4629,8 @@ CursorMorph.prototype.insert = function (aChar, shiftKey) {
 CursorMorph.prototype.ctrl = function (aChar) {
 	if ((aChar === 97) || (aChar === 65)) {
 		this.target.selectAll();
+    } else if (aChar === 90) {
+        this.undo();
 	} else if (aChar === 123) {
 		this.insert('{');
 	} else if (aChar === 125) {
@@ -4638,7 +4645,9 @@ CursorMorph.prototype.ctrl = function (aChar) {
 CursorMorph.prototype.cmd = function (aChar) {
 	if (aChar === 65) {
 		this.target.selectAll();
-	}
+	} else if (aChar === 90) {
+        this.undo();
+    }
 };
 
 CursorMorph.prototype.deleteRight = function () {
