@@ -1020,7 +1020,7 @@
 /*global window, HTMLCanvasElement, getMinimumFontHeight, FileReader, Audio,
 FileList, getBlurredShadowSupport*/
 
-var morphicVersion = '2012-November-29';
+var morphicVersion = '2012-November-30';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -4399,7 +4399,7 @@ CursorMorph.prototype.init = function (aStringOrTextMorph) {
 // CursorMorph event processing:
 
 CursorMorph.prototype.processKeyPress = function (event) {
-	//this.inspectKeyEvent(event);
+	// this.inspectKeyEvent(event);
 	if (this.keyDownEventUsed) {
 		this.keyDownEventUsed = false;
 		return null;
@@ -4607,7 +4607,6 @@ CursorMorph.prototype.updateSelection = function (shift) {
         this.target.clearSelection();
     }
 };
-
 
 // CursorMorph editing:
 
@@ -7181,13 +7180,17 @@ StringMorph.prototype.selectAll = function () {
     this.changed();
 };
 
+StringMorph.prototype.mouseDownLeft = function (pos) {
+    this.clearSelection();
+};
+
 StringMorph.prototype.mouseClickLeft = function (pos) {
 	if (this.isEditable) {
 		if (!this.currentlySelecting) {
 			this.edit();
 		}
 		this.root().cursor.gotoPos(pos);
-		this.currentlySelecting = false;
+		this.currentlySelecting = true;
 	} else {
 		this.escalateEvent('mouseClickLeft', pos);
 	}
@@ -7219,10 +7222,8 @@ StringMorph.prototype.enableSelecting = function () {
 };
 
 StringMorph.prototype.disableSelecting = function () {
-	this.mouseDownLeft = function () {
-		this.clearSelection();
-	};
-	delete this.mouseMove;
+	this.mouseDownLeft = StringMorph.prototype.mouseDownLeft;
+    delete this.mouseMove;
 };
 
 // TextMorph ////////////////////////////////////////////////////////////////
@@ -7596,6 +7597,8 @@ TextMorph.prototype.clearSelection = StringMorph.prototype.clearSelection;
 TextMorph.prototype.deleteSelection = StringMorph.prototype.deleteSelection;
 
 TextMorph.prototype.selectAll = StringMorph.prototype.selectAll;
+
+TextMorph.prototype.mouseDownLeft = StringMorph.prototype.mouseDownLeft;
 
 TextMorph.prototype.mouseClickLeft = StringMorph.prototype.mouseClickLeft;
 
