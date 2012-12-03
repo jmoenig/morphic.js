@@ -2489,7 +2489,7 @@ Morph.prototype.silentSetHeight = function (height) {
 	var h = Math.max(Math.round(height || 0), 0);
 	this.bounds.corner = new Point(
 		this.bounds.corner.x,
-		this.bounds.origin.y + (h)
+		this.bounds.origin.y + h
 	);
 };
 
@@ -4387,12 +4387,17 @@ CursorMorph.prototype.init = function (aStringOrTextMorph) {
 	this.keyDownEventUsed = false;
 	this.target = aStringOrTextMorph;
 	this.originalContents = this.target.text;
+    this.originalAlignment = this.target.alignment;
 	this.slot = this.target.text.length;
 	CursorMorph.uber.init.call(this);
 	ls = fontHeight(this.target.fontSize);
 	this.setExtent(new Point(Math.max(Math.floor(ls / 20), 1), ls));
 	this.drawNew();
 	this.image.getContext('2d').font = this.target.font();
+    if (this.target instanceof TextMorph &&
+            (this.target.alignment !== 'left')) {
+        this.target.setAlignmentToLeft();
+    }
 	this.gotoSlot(this.slot);
 };
 
@@ -4711,6 +4716,17 @@ CursorMorph.prototype.deleteLeft = function () {
         text.substr(this.slot);
 	this.target.drawNew();
 	this.goLeft();
+};
+
+// CursorMorph destroying:
+
+CursorMorph.prototype.destroy = function () {
+    if (this.target.alignment !== this.originalAlignment) {
+        this.target.alignment = this.originalAlignment;
+        this.target.drawNew();
+        this.target.changed();
+    }
+    CursorMorph.uber.destroy.call(this);
 };
 
 // CursorMorph utilities:
@@ -7223,7 +7239,7 @@ StringMorph.prototype.enableSelecting = function () {
 
 StringMorph.prototype.disableSelecting = function () {
 	this.mouseDownLeft = StringMorph.prototype.mouseDownLeft;
-    delete this.mouseMove;
+	delete this.mouseMove;
 };
 
 // TextMorph ////////////////////////////////////////////////////////////////
