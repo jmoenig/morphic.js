@@ -1020,7 +1020,7 @@
 /*global window, HTMLCanvasElement, getMinimumFontHeight, FileReader, Audio,
 FileList, getBlurredShadowSupport*/
 
-var morphicVersion = '2012-November-30';
+var morphicVersion = '2012-December-03';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -2475,7 +2475,7 @@ Morph.prototype.silentSetWidth = function (width) {
 	// do not drawNew() just yet
 	var w = Math.max(Math.round(width || 0), 0);
 	this.bounds.corner = new Point(
-		this.bounds.origin.x + (w),
+		this.bounds.origin.x + w,
 		this.bounds.corner.y
 	);
 };
@@ -7180,7 +7180,7 @@ StringMorph.prototype.selectAll = function () {
     this.changed();
 };
 
-StringMorph.prototype.mouseDownLeft = function (pos) {
+StringMorph.prototype.mouseDownLeft = function () {
     this.clearSelection();
 };
 
