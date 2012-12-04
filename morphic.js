@@ -1020,7 +1020,7 @@
 /*global window, HTMLCanvasElement, getMinimumFontHeight, FileReader, Audio,
 FileList, getBlurredShadowSupport*/
 
-var morphicVersion = '2012-December-03';
+var morphicVersion = '2012-December-04';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -7196,8 +7196,12 @@ StringMorph.prototype.selectAll = function () {
     this.changed();
 };
 
-StringMorph.prototype.mouseDownLeft = function () {
-    this.clearSelection();
+StringMorph.prototype.mouseDownLeft = function (pos) {
+    if (this.isEditable) {
+        this.clearSelection();
+    } else {
+        this.escalateEvent('mouseDownLeft', pos);
+    }
 };
 
 StringMorph.prototype.mouseClickLeft = function (pos) {
