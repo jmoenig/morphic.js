@@ -1020,7 +1020,7 @@
 /*global window, HTMLCanvasElement, getMinimumFontHeight, FileReader, Audio,
 FileList, getBlurredShadowSupport*/
 
-var morphicVersion = '2012-December-04';
+var morphicVersion = '2012-December-05';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -4643,6 +4643,7 @@ CursorMorph.prototype.undo = function () {
 CursorMorph.prototype.insert = function (aChar, shiftKey) {
 	var text;
     if (aChar === '\u0009') {
+        this.target.escalateEvent('reactToEdit', this.target);
         if (shiftKey) {
             return this.target.backTab(this.target);
         }
