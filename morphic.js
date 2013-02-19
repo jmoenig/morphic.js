@@ -578,13 +578,25 @@
     Drops of image elements from outside the world canvas are dispatched as
 
         droppedImage(aCanvas, name)
+        droppedSVG(anImage, name)
 
     events to interested Morphs at the mouse pointer. If you want you Morph
-    to e.g. import outside images you can add the droppedImage() method to
-    it. The parameter passed to the event handles is a new offscreen
-    canvas element representing a copy of the original image element which
-    can be directly used, e.g. by assigning it to another Morph's image
-    property.
+    to e.g. import outside images you can add the droppedImage() and / or the
+    droppedSVG() methods to it. The parameter passed to the event handles is
+    a new offscreen canvas element representing a copy of the original image
+    element which can be directly used, e.g. by assigning it to another
+    Morph's image property. In the case of a dropped SVG it is an image
+    element (not a canvas), which has to be rasterized onto a canvas before
+    it can be used. The benefit of handling SVGs as image elements is that
+    rasterization can be deferred until the destination scale is known, taking
+    advantage of SVG's ability for smooth scaling. If instead SVGs are to be
+    rasterized right away, you can set the
+    
+        MorphicPreferences.rasterizeSVGs
+    
+    preference to <true>. In this case dropped SVGs also trigger the
+    droppedImage() event with a canvas containing a rasterized version of the
+    SVG.
 
     The same applies to drops of audio or text files from outside the world
     canvas.
@@ -1021,7 +1033,7 @@
 /*global window, HTMLCanvasElement, getMinimumFontHeight, FileReader, Audio,
 FileList, getBlurredShadowSupport*/
 
-var morphicVersion = '2013-February-18';
+var morphicVersion = '2013-February-19';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -1038,7 +1050,8 @@ var standardSettings = {
     scrollBarSize: 12,
     mouseScrollAmount: 40,
     useSliderForInput: false,
-    useVirtualKeyboard: true
+    useVirtualKeyboard: true,
+    rasterizeSVGs: false
 };
 
 var touchScreenSettings = {
@@ -1054,7 +1067,8 @@ var touchScreenSettings = {
     scrollBarSize: 24,
     mouseScrollAmount: 40,
     useSliderForInput: true,
-    useVirtualKeyboard: true
+    useVirtualKeyboard: true,
+    rasterizeSVGs: false
 };
 
 var MorphicPreferences = standardSettings;
@@ -9501,6 +9515,7 @@ HandMorph.prototype.processMouseScroll = function (event) {
     drop event:
 
         droppedImage
+        droppedSVG
         droppedAudio
         droppedText
 */
@@ -9512,6 +9527,7 @@ HandMorph.prototype.processDrop = function (event) {
     element and dispatch the
     
         droppedImage(canvas, name)
+        droppedSVG(image, name)
         droppedAudio(audio, name)
     
     events to interested Morphs at the mouse pointer
@@ -9526,6 +9542,22 @@ HandMorph.prototype.processDrop = function (event) {
         img = new Image(),
         canvas,
         i;
+
+    function readSVG(aFile) {
+        var pic = new Image(),
+            frd = new FileReader();
+        while (!target.droppedSVG) {
+            target = target.parent;
+        }
+        pic.onload = function () {
+            target.droppedSVG(pic, aFile.name);
+        };
+        frd = new FileReader();
+        frd.onloadend = function (e) {
+            pic.src = e.target.result;
+        };
+        frd.readAsDataURL(aFile);
+    }
 
     function readImage(aFile) {
         var pic = new Image(),
@@ -9600,7 +9632,10 @@ HandMorph.prototype.processDrop = function (event) {
     if (files.length > 0) {
         for (i = 0; i < files.length; i += 1) {
             file = files[i];
-            if (file.type.indexOf("image") === 0) {
+            if (file.type.indexOf("svg") !== -1
+                    && !MorphicPreferences.rasterizeSVGs) {
+                readSVG(file);
+            } else if (file.type.indexOf("image") === 0) {
                 readImage(file);
             } else if (file.type.indexOf("audio") === 0) {
                 readAudio(file);
@@ -10081,6 +10116,10 @@ WorldMorph.prototype.wantsDropOf = function () {
 };
 
 WorldMorph.prototype.droppedImage = function () {
+    return null;
+};
+
+WorldMorph.prototype.droppedSVG = function () {
     return null;
 };
 
