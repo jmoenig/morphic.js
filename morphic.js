@@ -1033,7 +1033,7 @@
 /*global window, HTMLCanvasElement, getMinimumFontHeight, FileReader, Audio,
 FileList, getBlurredShadowSupport*/
 
-var morphicVersion = '2013-February-19';
+var morphicVersion = '2013-February-25';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -8993,9 +8993,11 @@ StringFieldMorph.prototype.string = function () {
     return this.text.text;
 };
 
-StringFieldMorph.prototype.mouseClickLeft = function () {
+StringFieldMorph.prototype.mouseClickLeft = function (pos) {
     if (this.isEditable) {
         this.text.edit();
+    } else {
+        this.escalateEvent('mouseClickLeft', pos);
     }
 };
 
