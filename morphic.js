@@ -1033,7 +1033,7 @@
 /*global window, HTMLCanvasElement, getMinimumFontHeight, FileReader, Audio,
 FileList, getBlurredShadowSupport*/
 
-var morphicVersion = '2013-February-25';
+var morphicVersion = '2013-February-27';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -2194,6 +2194,7 @@ Morph.prototype.init = function () {
     this.fps = 0;
     this.customContextMenu = null;
     this.lastTime = Date.now();
+    this.onNextStep = null; // optional function to be run once
 };
 
 // Morph string representation: e.g. 'a Morph 2 [20@45 | 130@250]'
@@ -2222,7 +2223,7 @@ Morph.prototype.stepFrame = function () {
     if (!this.step) {
         return null;
     }
-    var current, elapsed, leftover;
+    var current, elapsed, leftover, nxt;
     current = Date.now();
     elapsed = current - this.lastTime;
     if (this.fps > 0) {
@@ -2232,10 +2233,27 @@ Morph.prototype.stepFrame = function () {
     }
     if (leftover < 1) {
         this.lastTime = current;
+        if (this.onNextStep) {
+            nxt = this.onNextStep;
+            this.onNextStep = null;
+            nxt.call(this);
+        }
         this.step();
         this.children.forEach(function (child) {
             child.stepFrame();
         });
+    }
+};
+
+Morph.prototype.nextSteps = function (arrayOfFunctions) {
+    var lst = arrayOfFunctions || [],
+        nxt = lst.shift(),
+        myself = this;
+    if (nxt) {
+        this.onNextStep = function () {
+            nxt.call(myself);
+            myself.nextSteps(lst);
+        };
     }
 };
 
@@ -4716,7 +4734,10 @@ CursorMorph.prototype.ctrl = function (aChar) {
         this.insert('[');
     } else if (aChar === 93) {
         this.insert(']');
+    } else if (aChar === 64) {
+        this.insert('@');
     }
+
 };
 
 CursorMorph.prototype.cmd = function (aChar) {
