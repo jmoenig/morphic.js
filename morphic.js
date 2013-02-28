@@ -1033,7 +1033,7 @@
 /*global window, HTMLCanvasElement, getMinimumFontHeight, FileReader, Audio,
 FileList, getBlurredShadowSupport*/
 
-var morphicVersion = '2013-February-27';
+var morphicVersion = '2013-February-28';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -4615,9 +4615,9 @@ CursorMorph.prototype.goLeft = function (shift) {
     this.updateSelection(shift);
 };
 
-CursorMorph.prototype.goRight = function (shift) {
+CursorMorph.prototype.goRight = function (shift, howMany) {
     this.updateSelection(shift);
-    this.gotoSlot(this.slot + 1);
+    this.gotoSlot(this.slot + (howMany || 1));
     this.updateSelection(shift);
 };
 
@@ -4717,7 +4717,7 @@ CursorMorph.prototype.insert = function (aChar, shiftKey) {
         this.target.text = text;
         this.target.drawNew();
         this.target.changed();
-        this.goRight();
+        this.goRight(false, aChar.length);
     }
 };
 
@@ -10075,6 +10075,17 @@ WorldMorph.prototype.initEventListeners = function () {
         function (event) {
             myself.hand.processMouseScroll(event);
             event.preventDefault();
+        },
+        false
+    );
+
+    document.body.addEventListener(
+        "paste",
+        function (event) {
+            var txt = event.clipboardData.getData("Text");
+            if (txt && myself.cursor) {
+                myself.cursor.insert(txt);
+            }
         },
         false
     );
