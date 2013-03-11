@@ -1033,7 +1033,7 @@
 /*global window, HTMLCanvasElement, getMinimumFontHeight, FileReader, Audio,
 FileList, getBlurredShadowSupport*/
 
-var morphicVersion = '2013-February-28';
+var morphicVersion = '2013-March-11';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -2699,7 +2699,9 @@ Morph.prototype.toggleVisibility = function () {
 Morph.prototype.fullImageClassic = function () {
     // why doesn't this work for all Morphs?
     var fb = this.fullBounds(),
-        img = newCanvas(fb.extent());
+        img = newCanvas(fb.extent()),
+        ctx = img.getContext('2d');
+    ctx.translate(-this.bounds.origin.x, -this.bounds.origin.y);
     this.fullDrawOn(img, fb);
     img.globalAlpha = this.alpha;
     return img;
@@ -3415,7 +3417,7 @@ Morph.prototype.developersMenu = function () {
     menu.addItem(
         "pic...",
         function () {
-            window.open(this.fullImage().toDataURL());
+            window.open(this.fullImageClassic().toDataURL());
         },
         'open a new window\nwith a picture of this morph'
     );
