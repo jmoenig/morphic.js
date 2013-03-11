@@ -7302,11 +7302,12 @@ StringMorph.prototype.mouseDownLeft = function (pos) {
 };
 
 StringMorph.prototype.mouseClickLeft = function (pos) {
-    var cursor = this.root().cursor;
+    var cursor;
     if (this.isEditable) {
         if (!this.currentlySelecting) {
-            this.edit();
+            this.edit(); // creates a new cursor
         }
+        cursor = this.root().cursor;
         if (cursor) {
             cursor.gotoPos(pos);
         }
