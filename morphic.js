@@ -1030,10 +1030,11 @@
     - Jens Mönig
 */
 
+/*jslint browser: true */
+
 // Global settings /////////////////////////////////////////////////////
 
-/*global window, HTMLCanvasElement, getMinimumFontHeight, FileReader, Audio,
-FileList, getBlurredShadowSupport*/
+/*global FileList */
 
 var morphicVersion = '2014-February-03';
 var modules = {}; // keep track of additional loaded modules
@@ -4627,9 +4628,9 @@ CursorMorph.prototype.gotoSlot = function (slot) {
     }
     this.show();
     this.setPosition(pos);
-    if (this.parent
-            && this.parent.parent instanceof ScrollFrameMorph
-            && this.target.isScrollable) {
+    if (this.parent &&
+        this.parent.parent instanceof ScrollFrameMorph &&
+        this.target.isScrollable) {
         this.parent.parent.scrollCursorIntoView(this);
     }
 };
@@ -7607,8 +7608,8 @@ TextMorph.prototype.drawNew = function () {
             } else { // 'left'
                 x = 0;
             }
-            y = (i + 1) * (fontHeight(this.fontSize) + shadowHeight)
-                - shadowHeight;
+            y = (i + 1) * (fontHeight(this.fontSize) + shadowHeight) -
+                shadowHeight;
             context.fillText(line, x + offx, y + offy);
         }
     }
@@ -7628,8 +7629,8 @@ TextMorph.prototype.drawNew = function () {
         } else { // 'left'
             x = 0;
         }
-        y = (i + 1) * (fontHeight(this.fontSize) + shadowHeight)
-            - shadowHeight;
+        y = (i + 1) * (fontHeight(this.fontSize) + shadowHeight) -
+            shadowHeight;
         context.fillText(line, x + offx, y + offy);
     }
 
@@ -7771,8 +7772,8 @@ TextMorph.prototype.edit = StringMorph.prototype.edit;
 
 TextMorph.prototype.selection = StringMorph.prototype.selection;
 
-TextMorph.prototype.selectionStartSlot
-    = StringMorph.prototype.selectionStartSlot;
+TextMorph.prototype.selectionStartSlot =
+    StringMorph.prototype.selectionStartSlot;
 
 TextMorph.prototype.clearSelection = StringMorph.prototype.clearSelection;
 
@@ -7862,8 +7863,8 @@ TextMorph.prototype.setAlignmentToCenter = function () {
     this.changed();
 };
 
-TextMorph.prototype.toggleIsDraggable
-    = StringMorph.prototype.toggleIsDraggable;
+TextMorph.prototype.toggleIsDraggable =
+    StringMorph.prototype.toggleIsDraggable;
 
 TextMorph.prototype.toggleWeight = StringMorph.prototype.toggleWeight;
 
@@ -9827,8 +9828,8 @@ HandMorph.prototype.processDrop = function (event) {
     if (files.length > 0) {
         for (i = 0; i < files.length; i += 1) {
             file = files[i];
-            if (file.type.indexOf("svg") !== -1
-                    && !MorphicPreferences.rasterizeSVGs) {
+            if (file.type.indexOf("svg") !== -1 &&
+                !MorphicPreferences.rasterizeSVGs) {
                 readSVG(file);
             } else if (file.type.indexOf("image") === 0) {
                 readImage(file);
@@ -9884,8 +9885,8 @@ HandMorph.prototype.destroyTemporaries = function () {
 */
     var myself = this;
     this.temporaries.forEach(function (morph) {
-        if (!(morph.isClickable
-                && morph.bounds.containsPoint(myself.position()))) {
+        if (!(morph.isClickable &&
+              morph.bounds.containsPoint(myself.position()))) {
             morph.destroy();
             myself.temporaries.splice(myself.temporaries.indexOf(morph), 1);
         }
@@ -10096,8 +10097,8 @@ WorldMorph.prototype.initVirtualKeyboard = function () {
         document.body.removeChild(this.virtualKeyboard);
         this.virtualKeyboard = null;
     }
-    if (!MorphicPreferences.isTouchDevice
-            || !MorphicPreferences.useVirtualKeyboard) {
+    if (!MorphicPreferences.isTouchDevice ||
+        !MorphicPreferences.useVirtualKeyboard) {
         return;
     }
     this.virtualKeyboard = document.createElement("input");
@@ -10716,8 +10717,8 @@ WorldMorph.prototype.edit = function (aStringOrTextMorph) {
     this.keyboardReceiver = this.cursor;
 
     this.initVirtualKeyboard();
-    if (MorphicPreferences.isTouchDevice
-            && MorphicPreferences.useVirtualKeyboard) {
+    if (MorphicPreferences.isTouchDevice &&
+        MorphicPreferences.useVirtualKeyboard) {
         this.virtualKeyboard.style.top = this.cursor.top() + pos.y + "px";
         this.virtualKeyboard.style.left = this.cursor.left() + pos.x + "px";
         this.virtualKeyboard.focus();
