@@ -1030,7 +1030,7 @@
     - Jens Mönig
 */
 
-/*jslint indent: 4, browser: true */
+/*jslint indent: 4, browser: true, evil: true */
 
 // Global settings /////////////////////////////////////////////////////
 
@@ -1280,8 +1280,10 @@ function copy(target) {
     } else {
         c = {};
         for (property in target) {
-            if (!c[property]) {
-                c[property] = target[property];
+            if (Object.prototype.hasOwnProperty.call(target, property)) {
+                if (!c[property]) {
+                    c[property] = target[property];
+                }
             }
         }
     }
@@ -3270,8 +3272,10 @@ Morph.prototype.updateReferences = function (dict) {
     */
     var property;
     for (property in this) {
-        if (this[property] && this[property].isMorph && dict[property]) {
-            this[property] = dict[property];
+        if (Object.prototype.hasOwnProperty.call(this, property)) {
+            if (this[property] && this[property].isMorph && dict[property]) {
+                this[property] = dict[property];
+            }
         }
     }
 };
@@ -6570,8 +6574,10 @@ InspectorMorph.prototype.buildPanes = function () {
 
     // properties list
     for (property in this.target) {
-        if (property) { // dummy condition, to be refined
-            attribs.push(property);
+        if (Object.prototype.hasOwnProperty.call(this.target, property)) {
+            if (property) { // dummy condition, to be refined
+                attribs.push(property);
+            }
         }
     }
     if (this.showing === 'attributes') {
