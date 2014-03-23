@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 	<head>
 		<title>Morphic!</title>
@@ -8,6 +8,7 @@
 			var	worldCanvas, world, hi, hint1, hint2;
 
 			window.onload = function () {
+                'use strict';
 				worldCanvas = document.getElementById('world');
 				world = new WorldMorph(worldCanvas);
 				world.isDevMode = true;
@@ -36,6 +37,7 @@
 			};
 
 			function loop() {
+                'use strict';
 				world.doOneCycle();
 			}
 		</script>
