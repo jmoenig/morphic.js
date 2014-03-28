@@ -1034,7 +1034,8 @@
 
 // Global settings /////////////////////////////////////////////////////
 
-/*global getBlurredShadowSupport, getMinimumFontHeight, HTMLCanvasElement, FileReader, Audio, FileList */
+/*global getBlurredShadowSupport, getMinimumFontHeight,
+HTMLCanvasElement, FileReader, Audio, FileList */
 
 var morphicVersion = '2014-February-03';
 var modules = {}; // keep track of additional loaded modules
