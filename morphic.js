@@ -1282,7 +1282,7 @@ function copy(target) {
         c = {};
         for (property in target) {
             if (Object.prototype.hasOwnProperty.call(target, property)) {
-                if (!c[property]) {
+                if (c[property] === undefined) {
                     c[property] = target[property];
                 }
             }
