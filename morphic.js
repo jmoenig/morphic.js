@@ -4761,7 +4761,16 @@ CursorMorph.prototype.ctrl = function (aChar) {
         this.insert(']');
     } else if (aChar === 64) {
         this.insert('@');
+    } else if (!isNil(this.target.receiver)) {
+        if (aChar === 68) {
+            this.target.doIt();
+        } else if (aChar === 73) {
+            this.target.inspectIt();
+        } else if (aChar === 80) {
+            this.target.showIt();
+        }
     }
+
 
 };
 
@@ -4770,6 +4779,14 @@ CursorMorph.prototype.cmd = function (aChar) {
         this.target.selectAll();
     } else if (aChar === 90) {
         this.undo();
+    } else if (!isNil(this.target.receiver)) {
+        if (aChar === 68) {
+            this.target.doIt();
+        } else if (aChar === 73) {
+            this.target.inspectIt();
+        } else if (aChar === 80) {
+            this.target.showIt();
+        }
     }
 };
 
