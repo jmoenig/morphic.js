@@ -1035,7 +1035,7 @@
 /*global window, HTMLCanvasElement, getMinimumFontHeight, FileReader, Audio,
 FileList, getBlurredShadowSupport*/
 
-var morphicVersion = '2014-May-20';
+var morphicVersion = '2014-June-23';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -6157,6 +6157,7 @@ InspectorMorph.prototype.init = function (target) {
     this.edge = MorphicPreferences.isFlat ? 1 : 5;
     this.color = new Color(60, 60, 60);
     this.borderColor = new Color(95, 95, 95);
+    this.fps = 25;
     this.drawNew();
 
     // panes:
@@ -6179,6 +6180,28 @@ InspectorMorph.prototype.setTarget = function (target) {
     this.target = target;
     this.currentProperty = null;
     this.buildPanes();
+};
+
+InspectorMorph.prototype.updateCurrentSelection = function () {
+    var val, txt, cnts,
+        sel = this.list.selected;
+
+    if (isNil(sel)) {return; }
+    val = this.target[sel];
+    if (this.currentProperty === val) {return; }
+    this.currentProperty = val;
+    if (isNil(val)) {
+        txt = 'NULL';
+    } else if (isString(val)) {
+        txt = val;
+    } else {
+        txt = val.toString();
+    }
+    cnts = new TextMorph(txt);
+    cnts.isEditable = true;
+    cnts.enableSelecting();
+    cnts.setReceiver(this.target);
+    this.detail.setContents(cnts);
 };
 
 InspectorMorph.prototype.buildPanes = function () {
@@ -6248,23 +6271,8 @@ InspectorMorph.prototype.buildPanes = function () {
         doubleClickAction
     );
 
-    this.list.action = function (selected) {
-        var val, txt, cnts;
-        if (selected === undefined) {return; }
-        val = myself.target[selected];
-        myself.currentProperty = val;
-        if (val === null) {
-            txt = 'NULL';
-        } else if (isString(val)) {
-            txt = val;
-        } else {
-            txt = val.toString();
-        }
-        cnts = new TextMorph(txt);
-        cnts.isEditable = true;
-        cnts.enableSelecting();
-        cnts.setReceiver(myself.target);
-        myself.detail.setContents(cnts);
+    this.list.action = function () {
+        myself.updateCurrentSelection();
     };
 
     this.list.hBar.alpha = 0.6;
@@ -6581,6 +6589,11 @@ InspectorMorph.prototype.removeProperty = function () {
         this.inform(err);
     }
 };
+
+// InspectorMorph stepping
+
+InspectorMorph.prototype.step =
+    InspectorMorph.prototype.updateCurrentSelection;
 
 // MenuMorph ///////////////////////////////////////////////////////////
 
