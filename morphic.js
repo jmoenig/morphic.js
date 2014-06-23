@@ -6609,8 +6609,10 @@ InspectorMorph.prototype.removeProperty = function () {
 
 // InspectorMorph stepping
 
-InspectorMorph.prototype.step =
-    InspectorMorph.prototype.updateCurrentSelection;
+InspectorMorph.prototype.step = function () {
+    if (!isObject(this.currentProperty)) {return; }
+    this.updateCurrentSelection();
+};
 
 // MenuMorph ///////////////////////////////////////////////////////////
 
@@ -7954,7 +7956,7 @@ TextMorph.prototype.inspectIt = function () {
     var result = this.receiver.evaluateString(this.selection()),
         world = this.world(),
         inspector;
-    if (result !== null) {
+    if (isObject(result)) {
         inspector = new InspectorMorph(result);
         inspector.setPosition(world.hand.position());
         inspector.keepWithin(world);
