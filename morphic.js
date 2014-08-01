@@ -6575,6 +6575,7 @@ InspectorMorph.prototype.setTarget = function (target) {
 };
 
 InspectorMorph.prototype.updateCurrentSelection = function () {
+    'use strict';
     var val, txt, cnts,
         sel = this.list.selected,
         currentTxt = this.detail.contents.children[0],
@@ -7004,6 +7005,7 @@ InspectorMorph.prototype.removeProperty = function () {
 // InspectorMorph stepping
 
 InspectorMorph.prototype.step = function () {
+    'use strict';
     this.updateCurrentSelection();
     var lbl = this.target.toString();
     if (this.label.text === lbl) {return; }
