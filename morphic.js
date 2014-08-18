@@ -1037,7 +1037,7 @@
 /*global getBlurredShadowSupport, getMinimumFontHeight,
 HTMLCanvasElement, FileReader, Audio, FileList */
 
-var morphicVersion = '2014-July-29';
+var morphicVersion = '2014-August-13';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -10881,7 +10881,8 @@ WorldMorph.prototype.initEventListeners = function () {
                 }
                 event.preventDefault();
             }
-            if (event.ctrlKey || event.metaKey) {
+            if ((event.ctrlKey || event.metaKey) &&
+                    (event.keyIdentifier !== 'U+0056')) { // allow pasting-in
                 event.preventDefault();
             }
         },
