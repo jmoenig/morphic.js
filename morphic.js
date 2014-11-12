@@ -464,9 +464,15 @@
 
         MyMorph.prototype.mouseMove = function(pos) {};
 
-    The only optional parameter of such a method is a Point object
+    All of these methods have as optional parameter a Point object
     indicating the current position of the Hand inside the World's
-    coordinate system.
+    coordinate system. The
+
+        mouseMove(pos, button)
+
+    event method has an additional optional parameter indicating the
+    currently pressed mouse button, which is either 'left' or 'right'.
+    You can use this to let users interact with 3D environments.
 
     Events may be "bubbled" up a morph's owner chain by calling
 
@@ -725,7 +731,7 @@
         accept() - <enter> was pressed on a single line of text
         cancel() - <esc> was pressed on any text element
 
-    Note that "accept" only gets triggered by single-line text elements,
+    Note that "accept" only gets triggered by single-line texte elements,
     as the <enter> key is used to insert line breaks in multi-line
     elements. Therefore, whenever a text edit is terminated by the user
     (accepted, cancelled or otherwise),
@@ -1030,14 +1036,14 @@
     - Jens Mönig
 */
 
-/*jslint indent: 4, browser: true, evil: true */
+/*jshint indent: 4, strict: true, browser: true, evil: true */
 
 // Global settings /////////////////////////////////////////////////////
 
 /*global getBlurredShadowSupport, getMinimumFontHeight,
 HTMLCanvasElement, FileReader, Audio, FileList */
 
-var morphicVersion = '2014-August-13';
+var morphicVersion = '2014-November-06';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -1282,7 +1288,7 @@ function copy(target) {
         c = {};
         for (property in target) {
             if (Object.prototype.hasOwnProperty.call(target, property)) {
-                if (c[property] === undefined) {
+                if (!c[property]) {
                     c[property] = target[property];
                 }
             }
@@ -6271,14 +6277,14 @@ SliderMorph.prototype.setStart = function (num) {
     var newStart;
     if (typeof num === 'number') {
         this.start = Math.min(
-            Math.max(num, 0),
+            num,
             this.stop - this.size
         );
     } else {
         newStart = parseFloat(num);
         if (!isNaN(newStart)) {
             this.start = Math.min(
-                Math.max(newStart, 0),
+                newStart,
                 this.stop - this.size
             );
         }
@@ -9878,11 +9884,11 @@ HandMorph.prototype.init = function (aWorld) {
     this.world = aWorld;
     this.mouseButton = null;
     this.mouseOverList = [];
-    this.mouseDownMorph = null;
     this.morphToGrab = null;
     this.grabOrigin = null;
     this.temporaries = [];
     this.touchHoldTimeout = null;
+    this.contextMenuEnabled = false;
 };
 
 HandMorph.prototype.changed = function () {
@@ -10033,9 +10039,10 @@ HandMorph.prototype.drop = function () {
 
 HandMorph.prototype.processMouseDown = function (event) {
     'use strict';
-    var morph, expectedClick, actualClick;
+    var morph, actualClick;
 
     this.destroyTemporaries();
+    this.contextMenuEnabled = true;
     this.morphToGrab = null;
     if (this.children.length !== 0) {
         this.drop();
@@ -10068,15 +10075,9 @@ HandMorph.prototype.processMouseDown = function (event) {
         if (event.button === 2 || event.ctrlKey) {
             this.mouseButton = 'right';
             actualClick = 'mouseDownRight';
-            expectedClick = 'mouseClickRight';
         } else {
             this.mouseButton = 'left';
             actualClick = 'mouseDownLeft';
-            expectedClick = 'mouseClickLeft';
-        }
-        this.mouseDownMorph = morph;
-        while (!this.mouseDownMorph[expectedClick]) {
-            this.mouseDownMorph = this.mouseDownMorph.parent;
         }
         while (!morph[actualClick]) {
             morph = morph.parent;
@@ -10139,7 +10140,7 @@ HandMorph.prototype.processMouseUp = function () {
             expectedClick = 'mouseClickLeft';
         } else {
             expectedClick = 'mouseClickRight';
-            if (this.mouseButton) {
+            if (this.mouseButton && this.contextMenuEnabled) {
                 context = morph;
                 contextMenu = context.contextMenu();
                 while ((!contextMenu) &&
@@ -10199,16 +10200,18 @@ HandMorph.prototype.processMouseMove = function (event) {
     // mouseOverNew = this.allMorphsAtPointer();
     mouseOverNew = this.morphAtPointer().allParents();
 
-    if ((this.children.length === 0) &&
-            (this.mouseButton === 'left')) {
+    if (!this.children.length && this.mouseButton) {
         topMorph = this.morphAtPointer();
         morph = topMorph.rootForGrab();
         if (topMorph.mouseMove) {
-            topMorph.mouseMove(pos);
+            topMorph.mouseMove(pos, this.mouseButton);
+            if (this.mouseButton === 'right') {
+                this.contextMenuEnabled = false;
+            }
         }
 
         // if a morph is marked for grabbing, just grab it
-        if (this.morphToGrab) {
+        if (this.mouseButton === 'left' && this.morphToGrab) {
             if (this.morphToGrab.isDraggable) {
                 morph = this.morphToGrab;
                 this.grab(morph);
