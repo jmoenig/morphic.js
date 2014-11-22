@@ -1043,7 +1043,7 @@
 /*global getBlurredShadowSupport, getMinimumFontHeight,
 HTMLCanvasElement, FileReader, Audio, FileList */
 
-var morphicVersion = '2014-November-06';
+var morphicVersion = '2014-November-20';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -6106,7 +6106,7 @@ SliderMorph.prototype.rangeSize = function () {
 
 SliderMorph.prototype.ratio = function () {
     'use strict';
-    return this.size / this.rangeSize();
+    return this.size / (this.rangeSize() + 1);
 };
 
 SliderMorph.prototype.unitSize = function () {
