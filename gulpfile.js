@@ -24,7 +24,24 @@ var scripts = [
     'src/box-morph.js',
     'src/speech-bubble-morph.js',
     'src/circle-box-morph.js',
-    'src/todo.js'
+    'src/color-picker-morph.js',
+    'src/gray-palette-morph.js',
+    'src/slider-button-morph.js',
+    'src/slider-morph.js',
+    'src/mouse-sensor-morph.js',
+    'src/inspector-morph.js',
+    'src/menu-morph.js',
+    'src/string-morph.js',
+    'src/text-morph.js',
+    'src/trigger-morph.js',
+    'src/menu-item-morph.js',
+    'src/frame-morph.js',
+    'src/scroll-frame-morph.js',
+    'src/list-morph.js',
+    'src/string-field-morph.js',
+    'src/bouncer-morph.js',
+    'src/hand-morph.js',
+    'src/world-morph.js'
 ];
 
 gulp.task('intro', function(){
