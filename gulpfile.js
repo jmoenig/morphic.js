@@ -4,6 +4,7 @@ var footer = require('gulp-footer');
 var rename = require('gulp-rename');
 var concat = require('gulp-concat');
 var jslint = require('gulp-jslint');
+var uglify = require('gulp-uglify');
 
 var scripts = [
     'src/doc.js',
@@ -62,7 +63,8 @@ gulp.task('scripts', ['intro'], function(){
 });
 
 gulp.task('lint', ['scripts'], function(){
-    return gulp.src(['morphic.js'])
+    // JS Code Quality checks with JSLint
+    return gulp.src('morphic.js')
     .pipe(jslint({
         evil: true,
         forin: true,
@@ -87,6 +89,25 @@ gulp.task('lint', ['scripts'], function(){
     .on('error', function(error){
         console.error(String(error));
     });
+});
+
+gulp.task('compress', ['scripts'], function(){
+    var pkg = require('./package.json');
+    var banner = ['/**',
+      ' * <%= pkg.name %> - <%= pkg.description %>',
+      ' * @version v<%= pkg.version %>',
+      ' * @link <%= pkg.homepage %>',
+      ' * @license <%= pkg.license %>',
+      ' */',
+      '']
+    .join('\n');
+
+    // Minify JavaScript
+    return gulp.src('morphic.js')
+    .pipe(uglify())
+    .pipe(rename('morphic.min.js'))
+    .pipe(header(banner, {pkg: pkg}))
+    .pipe(gulp.dest('.'));
 });
 
 // Rerun the task when a file changes
