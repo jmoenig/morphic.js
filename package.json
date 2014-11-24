@@ -9,6 +9,7 @@
     "gulp-concat": "^2.4.2",
     "gulp-footer": "^1.0.5",
     "gulp-header": "^1.2.2",
+    "gulp-jslint": "^0.1.9",
     "gulp-rename": "^1.2.0"
   },
   "scripts": {

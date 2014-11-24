@@ -1,30 +1,30 @@
 /*
-	morphic.js
+    morphic.js
 
-	a lively Web-GUI
-	inspired by Squeak
+    a lively Web-GUI
+    inspired by Squeak
 
-	written by Jens Mönig
-	jens@moenig.org
+    written by Jens Mönig
+    jens@moenig.org
 
-	Copyright (C) 2012 by Jens Mönig
+    Copyright (C) 2012 by Jens Mönig
 
-	this documentation last changed: April 07, 2013
+    this documentation last changed: April 07, 2013
 
-	This file is part of Snap!.
+    This file is part of Snap!.
 
-	Snap! is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Affero General Public License as
-	published by the Free Software Foundation, either version 3 of
-	the License, or (at your option) any later version.
+    Snap! is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of
+    the License, or (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Affero General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
 
-	You should have received a copy of the GNU Affero General Public License
-	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
     documentation contents

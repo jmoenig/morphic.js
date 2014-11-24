@@ -3,6 +3,7 @@ var header = require('gulp-header');
 var footer = require('gulp-footer');
 var rename = require('gulp-rename');
 var concat = require('gulp-concat');
+var jslint = require('gulp-jslint');
 
 var scripts = [
     'src/doc.js',
@@ -58,6 +59,34 @@ gulp.task('scripts', ['intro'], function(){
     return gulp.src(scripts)
     .pipe(concat('morphic.js'))
     .pipe(gulp.dest('.'));
+});
+
+gulp.task('lint', ['scripts'], function(){
+    return gulp.src(['morphic.js'])
+    .pipe(jslint({
+        evil: true,
+        forin: true,
+        sloppy: true,
+        indent: 4,
+        maxlength: 78,
+        global: [
+            'Audio',
+            'FileList',
+            'FileReader',
+            'HTMLCanvasElement',
+            'Image',
+            'clearInterval',
+            'document',
+            'getBlurredShadowSupport',
+            'getMinimumFontHeight',
+            'setInterval',
+            'window'
+        ],
+        errorsOnly: false
+    }))
+    .on('error', function(error){
+        console.error(String(error));
+    });
 });
 
 // Rerun the task when a file changes
