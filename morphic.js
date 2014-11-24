@@ -1,5 +1,4 @@
 /*
-
     morphic.js
 
     a lively Web-GUI
@@ -8,7 +7,9 @@
     written by Jens Mönig
     jens@moenig.org
 
-    Copyright (C) 2014 by Jens Mönig
+    Copyright (C) 2012 by Jens Mönig
+
+    this documentation last changed: April 07, 2013
 
     This file is part of Snap!.
 
@@ -464,15 +465,9 @@
 
         MyMorph.prototype.mouseMove = function(pos) {};
 
-    All of these methods have as optional parameter a Point object
+    The only optional parameter of such a method is a Point object
     indicating the current position of the Hand inside the World's
-    coordinate system. The
-
-        mouseMove(pos, button)
-
-    event method has an additional optional parameter indicating the
-    currently pressed mouse button, which is either 'left' or 'right'.
-    You can use this to let users interact with 3D environments.
+    coordinate system.
 
     Events may be "bubbled" up a morph's owner chain by calling
 
@@ -1035,7 +1030,6 @@
 
     - Jens Mönig
 */
-
 // Global settings /////////////////////////////////////////////////////
 
 /*global window, HTMLCanvasElement, getMinimumFontHeight, FileReader, Audio,
