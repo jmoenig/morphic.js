@@ -1043,7 +1043,7 @@
 /*global getBlurredShadowSupport, getMinimumFontHeight,
 HTMLCanvasElement, FileReader, Audio, FileList */
 
-var morphicVersion = '2014-November-20';
+var morphicVersion = '2014-December-03';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -4230,6 +4230,7 @@ PenMorph.prototype.init = function () {
     this.size = 1;
     this.wantsRedraw = false;
     this.penPoint = 'tip'; // or 'center"
+    this.penBounds = null; // rect around the visible arrow shape
 
     HandleMorph.uber.init.call(this);
     this.setExtent(new Point(size, size));
@@ -4254,11 +4255,10 @@ PenMorph.prototype.changed = function () {
 
 PenMorph.prototype.drawNew = function (facing) {
     'use strict';
-/*
-    my orientation can be overridden with the "facing" parameter to
-    implement Scratch-style rotation styles
 
-*/
+    // my orientation can be overridden with the "facing" parameter to
+    // implement Scratch-style rotation styles
+
     var context, start, dest, left, right, len,
         direction = facing || this.heading;
 
@@ -4281,6 +4281,15 @@ PenMorph.prototype.drawNew = function (facing) {
         right = start.distanceAngle(len * 0.33, direction - 230);
     }
 
+    // cache penBounds
+    this.penBounds = new Rectangle(
+        Math.min(start.x, dest.x, left.x, right.x),
+        Math.min(start.y, dest.y, left.y, right.y),
+        Math.max(start.x, dest.x, left.x, right.x),
+        Math.max(start.y, dest.y, left.y, right.y)
+    );
+
+    // draw arrow shape
     context.fillStyle = this.color.toString();
     context.beginPath();
 
@@ -4297,7 +4306,6 @@ PenMorph.prototype.drawNew = function (facing) {
     context.lineWidth = 1;
     context.stroke();
     context.fill();
-
 };
 
 // PenMorph access:
