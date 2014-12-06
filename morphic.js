@@ -1043,7 +1043,7 @@
 /*global getBlurredShadowSupport, getMinimumFontHeight,
 HTMLCanvasElement, FileReader, Audio, FileList */
 
-var morphicVersion = '2014-December-03';
+var morphicVersion = '2014-December-05';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -2033,7 +2033,9 @@ Rectangle.prototype.round = function () {
 Rectangle.prototype.spread = function () {
     'use strict';
     // round me by applying floor() to my origin and ceil() to my corner
-    return this.origin.floor().corner(this.corner.ceil());
+    // expand by 1 to be on the safe side, this eliminates rounding
+    // artefacts caused by Safari's auto-scaling on retina displays
+    return this.origin.floor().corner(this.corner.ceil()).expandBy(1);
 };
 
 Rectangle.prototype.amountToTranslateWithin = function (aRect) {
