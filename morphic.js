@@ -3011,12 +3011,12 @@ Morph.prototype.isTransparentAt = function (aPoint) {
         }
         point = aPoint.subtract(this.bounds.origin);
         context = this.image.getContext('2d');
+        try {
         data = context.getImageData(
             Math.floor(point.x),
             Math.floor(point.y),
-            1,
-            1
-        );
+            1,1);
+        } catch (e) { data = {data: [this.color.r, this.color.g, this.color.b, this.color.a]};}
         return data.data[3] === 0;
     }
     return false;
