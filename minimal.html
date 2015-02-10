@@ -1,16 +1,17 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 	<head>
 		<title>Morphic!</title>
 		<script type="text/javascript" src="morphic.js"></script>
+		<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.2.js"></script>
 		<script type="text/javascript">			
-			var	world; 
+			var world; 
 
-			window.onload = function () {
-				world = new WorldMorph(document.getElementById('world'));
+			$(document).ready(function () {
+				world = new WorldMorph($('#world')[0]);
 				world.isDevMode = true;
 				setInterval(loop, 50);
-			};
+			});
 
 			function loop() {
 				world.doOneCycle();
