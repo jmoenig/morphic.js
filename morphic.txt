@@ -726,7 +726,7 @@
         accept() - <enter> was pressed on a single line of text
         cancel() - <esc> was pressed on any text element
 
-    Note that "accept" only gets triggered by single-line texte elements,
+    Note that "accept" only gets triggered by single-line text elements,
     as the <enter> key is used to insert line breaks in multi-line
     elements. Therefore, whenever a text edit is terminated by the user
     (accepted, cancelled or otherwise),

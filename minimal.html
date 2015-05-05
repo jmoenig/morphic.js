@@ -1,25 +1,30 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
-	<head>
-		<title>Morphic!</title>
-		<script type="text/javascript" src="morphic.js"></script>
-		<script type="text/javascript">			
-			var	world; 
 
-			window.onload = function () {
-				world = new WorldMorph(document.getElementById('world'));
-				world.isDevMode = true;
-				setInterval(loop, 50);
-			};
+<head>
+    <title>Morphic!</title>
+    <script type="text/javascript" src="morphic.js"></script>
+    <script type="text/javascript">
+        var world;
 
-			function loop() {
-				world.doOneCycle();
-			}
-		</script>
-	</head>
-	<body>
-		<canvas id="world" tabindex="1" width="800" height="600" style="position: absolute;">
-			<p>Your browser doesn't support canvas.</p>
-		</canvas>
-	</body>
+        window.onload = function() {
+            'use strict';
+            world = new WorldMorph(document.getElementById('world'));
+            world.isDevMode = true;
+            setInterval(loop, 50);
+        };
+
+        function loop() {
+            'use strict';
+            world.doOneCycle();
+        }
+    </script>
+</head>
+
+<body>
+    <canvas id="world" tabindex="1" width="800" height="600" style="position: absolute;">
+        <p>Your browser doesn't support canvas.</p>
+    </canvas>
+</body>
+
 </html>
