@@ -528,7 +528,7 @@
     whose "isTemplate" flag is false, in other words: a non-template.
 
     When creating a copy from a template, the copy's
-    
+
         reactToTemplateCopy
 
     is invoked, if it is present.
@@ -2884,7 +2884,7 @@ Morph.prototype.fullChanged = function () {
 };
 
 Morph.prototype.childChanged = function () {
-    // react to a  change in one of my children,
+    // react to a change in one of my children,
     // default is to just pass this message on upwards
     // override this method for Morphs that need to adjust accordingly
     if (this.parent) {
@@ -9860,6 +9860,7 @@ WorldMorph.prototype.init = function (aCanvas, fillPage) {
     this.isDraggable = false;
     this.currentKey = null; // currently pressed key code
     this.worldCanvas = aCanvas;
+    this.noticesTransparentClick = true;
 
     // additional properties:
     this.stamp = Date.now(); // reference in multi-world setups
