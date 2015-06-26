@@ -1048,7 +1048,7 @@
 /*global window, HTMLCanvasElement, getMinimumFontHeight, FileReader, Audio,
 FileList, getBlurredShadowSupport*/
 
-var morphicVersion = '2015-June-25';
+var morphicVersion = '2015-June-26';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -2405,10 +2405,13 @@ Morph.prototype.moveBy = function (delta) {
 };
 
 Morph.prototype.silentMoveBy = function (delta) {
+    var children = this.children,
+        i = children.length;
     this.bounds = this.bounds.translateBy(delta);
-    this.children.forEach(function (child) {
-        child.silentMoveBy(delta);
-    });
+    // ugly optimization avoiding forEach()
+    for (i; i > 0; i -= 1) {
+        children[i - 1].silentMoveBy(delta);
+    }
 };
 
 Morph.prototype.setPosition = function (aPoint) {
