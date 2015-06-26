@@ -828,8 +828,8 @@
             // use context to paint stuff here
         };
 
-    If your new morph stores or references other morphs outside of the
-    submorph tree in other properties, be sure to also override the
+    If your new morph stores or references to other morphs outside of
+    the submorph tree in other properties, be sure to also override the
     default
 
         updateReferences()
@@ -6505,7 +6505,7 @@ InspectorMorph.prototype.setExtent = function (aPoint) {
     this.fixLayout();
 };
 
-//InspectorMorph editing ops:
+// InspectorMorph editing ops:
 
 InspectorMorph.prototype.save = function () {
     var txt = this.detail.contents.children[0].text.toString(),
@@ -6593,6 +6593,15 @@ InspectorMorph.prototype.step = function () {
     this.label.text = lbl;
     this.label.drawNew();
     this.fixLayout();
+};
+
+// InspectorMorph duplicating:
+
+InspectorMorph.prototype.updateReferences = function (map) {
+    var active = this.list.activeIndex();
+    InspectorMorph.uber.updateReferences.call(this, map);
+    this.buildPanes();
+    this.list.activateIndex(active);
 };
 
 // MenuMorph ///////////////////////////////////////////////////////////
@@ -9059,6 +9068,18 @@ ListMorph.prototype.setExtent = function (aPoint) {
         this.listContents.setBottom(nb.bottom());
     }
     ListMorph.uber.setExtent.call(this, aPoint);
+};
+
+ListMorph.prototype.activeIndex = function () {
+    return this.listContents.children.indexOf(this.active);
+};
+
+ListMorph.prototype.activateIndex = function (idx) {
+    var item = this.listContents.children[idx];
+    if (!item) {return; }
+    item.image = item.pressImage;
+    item.changed();
+    item.trigger();
 };
 
 // StringFieldMorph ////////////////////////////////////////////////////
