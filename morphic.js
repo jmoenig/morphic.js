@@ -10399,6 +10399,13 @@ WorldMorph.prototype.contextMenu = function () {
             'inspect',
             'open a window on\nall properties'
         );
+        menu.addItem(
+            "screenshot...",
+            function () {
+                window.open(this.fullImageClassic().toDataURL());
+            },
+            'open a new window\nwith a picture of this morph'
+        );
         menu.addLine();
         menu.addItem(
             "restore display",
