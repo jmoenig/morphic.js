@@ -3092,6 +3092,13 @@ Morph.prototype.rootForGrab = function () {
     return this.parent.rootForGrab();
 };
 
+Morph.prototype.isCorrectingOutsideDrag = function () {
+    // make sure I don't "trail behind" the hand when dragged
+    // override for morphs that you want to be dragged outside
+    // their full bounds
+    return true;
+};
+
 Morph.prototype.wantsDropOf = function (aMorph) {
     // default is to answer the general flag - change for my heirs
     if ((aMorph instanceof HandleMorph) ||
@@ -9586,32 +9593,16 @@ HandMorph.prototype.processMouseMove = function (event) {
                 this.grabOrigin = this.morphToGrab.situation();
             }
             if (morph) {
-                // if the mouse has left its fullBounds, center it
+                // if the mouse has left its fullBounds, allow to center it
                 fb = morph.fullBounds();
-                if (!fb.containsPoint(pos)) {
+                if (!fb.containsPoint(pos) &&
+                        morph.isCorrectingOutsideDrag()) {
                     this.bounds.origin = fb.center();
                     this.grab(morph);
                     this.setPosition(pos);
                 }
             }
         }
-
-/*
-    original, more cautious code for grabbing Morphs,
-    retained in case of needing to fall back:
-
-        if (morph === this.morphToGrab) {
-            if (morph.isDraggable) {
-                this.grab(morph);
-            } else if (morph.isTemplate) {
-                morph = morph.fullCopy();
-                morph.isTemplate = false;
-                morph.isDraggable = true;
-                this.grab(morph);
-            }
-        }
-*/
-
     }
 
     this.mouseOverList.forEach(function (old) {
