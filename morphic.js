@@ -3181,6 +3181,17 @@ Morph.prototype.move = function () {
     );
 };
 
+Morph.prototype.moveCenter = function () {
+    this.world().activeHandle = new HandleMorph(
+        this,
+        null,
+        null,
+        null,
+        null,
+        'moveCenter'
+    );
+};
+
 Morph.prototype.hint = function (msg) {
     var m, text;
     text = msg;
@@ -3729,7 +3740,7 @@ HandleMorph.prototype.init = function (
     this.target = target || null;
     this.minExtent = new Point(minX || 0, minY || 0);
     this.inset = new Point(insetX || 0, insetY || insetX || 0);
-    this.type =  type || 'resize'; // can also be 'move'
+    this.type =  type || 'resize'; // can also be 'move', 'moveCenter'
     HandleMorph.uber.init.call(this);
     this.color = new Color(255, 255, 255);
     this.isDraggable = false;
@@ -3754,11 +3765,15 @@ HandleMorph.prototype.drawNew = function () {
     );
     this.image = this.normalImage;
     if (this.target) {
-        this.setPosition(
-            this.target.bottomRight().subtract(
-                this.extent().add(this.inset)
-            )
-        );
+        if (this.type === 'moveCenter') {
+            this.setCenter(this.target.center());
+        } else { // 'resize', 'move'
+            this.setPosition(
+                this.target.bottomRight().subtract(
+                    this.extent().add(this.inset)
+                )
+            );
+        }
         this.target.add(this);
         this.target.changed();
     }
@@ -3770,6 +3785,7 @@ HandleMorph.prototype.drawOnCanvas = function (
     shadowColor
 ) {
     var context = aCanvas.getContext('2d'),
+        isSquare = (this.type.indexOf('move') === 0),
         p1,
         p11,
         p2,
@@ -3781,7 +3797,7 @@ HandleMorph.prototype.drawOnCanvas = function (
 
     context.strokeStyle = color.toString();
 
-    if (this.type === 'move') {
+    if (isSquare) {
 
         p1 = this.bottomLeft().subtract(this.position());
         p11 = p1.copy();
@@ -3818,7 +3834,7 @@ HandleMorph.prototype.drawOnCanvas = function (
 
     context.strokeStyle = shadowColor.toString();
 
-    if (this.type === 'move') {
+    if (isSquare) {
 
         p1 = this.bottomLeft().subtract(this.position());
         p11 = p1.copy();
@@ -3860,11 +3876,16 @@ HandleMorph.prototype.step = null;
 
 HandleMorph.prototype.mouseDownLeft = function (pos) {
     var world = this.root(),
-        offset = pos.subtract(this.bounds.origin),
+        offset,
         myself = this;
 
     if (!this.target) {
         return null;
+    }
+    if (this.type === 'moveCenter') {
+        offset = pos.subtract(this.center());
+    } else {
+        offset = pos.subtract(this.bounds.origin);
     }
     this.step = function () {
         var newPos, newExt;
@@ -3882,6 +3903,8 @@ HandleMorph.prototype.mouseDownLeft = function (pos) {
                         myself.extent().add(myself.inset)
                     )
                 );
+            } else if (this.type === 'moveCenter') {
+                myself.target.setCenter(newPos);
             } else { // type === 'move'
                 myself.target.setPosition(
                     newPos.subtract(this.target.extent())
