@@ -6708,6 +6708,8 @@ MenuMorph.prototype.init = function (target, title, environment, fontSize) {
     this.label = null;
     this.world = null;
     this.isListContents = false;
+    this.hasFocus = false;
+    this.selection = null;
 
     // initialize inherited properties:
     MenuMorph.uber.init.call(this);
@@ -6927,6 +6929,7 @@ MenuMorph.prototype.popup = function (world, pos) {
     }
     world.add(this);
     world.activeMenu = this;
+    this.world = world; // optionally enable keyboard support
     this.fullChanged();
 };
 
@@ -6955,6 +6958,105 @@ MenuMorph.prototype.popUpCenteredInWorld = function (world) {
             this.extent().floorDivideBy(2)
         )
     );
+};
+
+// MenuMorph keyboard accessibility
+
+MenuMorph.prototype.getFocus = function () {
+    this.world.keyboardReceiver = this;
+    this.selection = null;
+    this.selectFirst();
+    this.hasFocus = true;
+};
+
+MenuMorph.prototype.processKeyDown = function (event) {
+    //console.log(event.keyCode);
+    switch (event.keyCode) {
+    case 13: // 'enter'
+    case 32: // 'space'
+        if (this.selection) {
+            this.selection.mouseClickLeft();
+        }
+        return;
+    case 27: // 'esc'
+        return this.destroy();
+    case 38: // 'up arrow'
+        return this.selectUp();
+    case 40: // 'down arrow'
+        return this.selectDown();
+    default:
+        nop();
+    }
+};
+
+MenuMorph.prototype.processKeyUp = function (event) {
+    nop(event);
+};
+
+MenuMorph.prototype.processKeyPress = function (event) {
+    nop(event);
+};
+
+MenuMorph.prototype.selectFirst = function () {
+    var i;
+    for (i = 0; i < this.children.length; i += 1) {
+        if (this.children[i] instanceof MenuItemMorph) {
+            this.select(this.children[i]);
+            return;
+        }
+    }
+};
+
+MenuMorph.prototype.selectUp = function () {
+    var triggers, idx;
+
+    triggers = this.children.filter(function (each) {
+        return each instanceof MenuItemMorph;
+    });
+    if (!this.selection) {
+        if (triggers.length) {
+            this.select(triggers[0]);
+        }
+        return;
+    }
+    idx = triggers.indexOf(this.selection) - 1;
+    if (idx < 0) {
+        idx = triggers.length - 1;
+    }
+    this.select(triggers[idx]);
+};
+
+MenuMorph.prototype.selectDown = function () {
+    var triggers, idx;
+
+    triggers = this.children.filter(function (each) {
+        return each instanceof MenuItemMorph;
+    });
+    if (!this.selection) {
+        if (triggers.length) {
+            this.select(triggers[0]);
+        }
+        return;
+    }
+    idx = triggers.indexOf(this.selection) + 1;
+    if (idx >= triggers.length) {
+        idx = 0;
+    }
+    this.select(triggers[idx]);
+};
+
+MenuMorph.prototype.select = function (aMenuItem) {
+    this.unselectAllItems();
+    aMenuItem.image = aMenuItem.highlightImage;
+    aMenuItem.changed();
+    this.selection = aMenuItem;
+};
+
+MenuMorph.prototype.destroy = function () {
+    if (this.hasFocus) {
+        this.world.keyboardReceiver = null;
+    }
+    MenuMorph.uber.destroy.call(this);
 };
 
 // StringMorph /////////////////////////////////////////////////////////
