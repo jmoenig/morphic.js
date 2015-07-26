@@ -2501,6 +2501,32 @@ Morph.prototype.keepWithin = function (aMorph) {
     }
 };
 
+Morph.prototype.scrollIntoView = function () {
+    var leftOff, rightOff, topOff, bottomOff,
+        sf = this.parentThatIsA(ScrollFrameMorph);
+    if (!sf) {return; }
+    rightOff = Math.min(
+        this.fullBounds().right() - sf.right(),
+        sf.contents.right() - sf.right()
+    );
+    if (rightOff > 0) {
+        sf.contents.moveBy(new Point(-rightOff, 0));
+    }
+    leftOff = this.fullBounds().left() - sf.left();
+    if (leftOff < 0) {
+        sf.contents.moveBy(new Point(-leftOff, 0));
+    }
+    topOff = this.fullBounds().top() - sf.top();
+    if (topOff < 0) {
+        sf.contents.moveBy(new Point(0, -topOff));
+    }
+    bottomOff = this.fullBounds().bottom() - sf.bottom();
+    if (bottomOff > 0) {
+        sf.contents.moveBy(new Point(0, -bottomOff));
+    }
+    sf.adjustScrollBars();
+};
+
 // Morph accessing - dimensional changes requiring a complete redraw
 
 Morph.prototype.setExtent = function (aPoint) {
