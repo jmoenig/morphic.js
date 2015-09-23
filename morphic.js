@@ -1048,7 +1048,7 @@
 /*global window, HTMLCanvasElement, getMinimumFontHeight, FileReader, Audio,
 FileList, getBlurredShadowSupport*/
 
-var morphicVersion = '2015-July-28';
+var morphicVersion = '2015-September-23';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -2641,10 +2641,10 @@ Morph.prototype.drawOn = function (aCanvas, aRect) {
         return null;
     }
     rectangle = aRect || this.bounds();
-    area = rectangle.intersect(this.bounds).round();
+    area = rectangle.intersect(this.bounds);
     if (area.extent().gt(new Point(0, 0))) {
         delta = this.position().neg();
-        src = area.copy().translateBy(delta).round();
+        src = area.copy().translateBy(delta);
         context = aCanvas.getContext('2d');
         context.globalAlpha = this.alpha;
 
@@ -2659,8 +2659,8 @@ Morph.prototype.drawOn = function (aCanvas, aRect) {
 
         context.drawImage(
             this.image,
-            src.left(),
-            src.top(),
+            sl,
+            st,
             w,
             h,
             area.left(),
@@ -2674,8 +2674,8 @@ Morph.prototype.drawOn = function (aCanvas, aRect) {
         try {
             context.drawImage(
                 this.image,
-                src.left(),
-                src.top(),
+                sl,
+                st,
                 w,
                 h,
                 area.left(),
