@@ -147,12 +147,14 @@
     III. yet to implement
     ---------------------
     - keyboard support for scroll frames and lists
+    - full keyboard support for menus (partial support exists)
     - virtual keyboard support for Android and IE
 
 
     IV. open issues
     ----------------
-    - blurry shadows don't work well in Chrome
+    - clipboard support (copy & paste)
+    - native (unscaled) high-resolution display support
 
 
     V. browser compatibility
@@ -163,8 +165,10 @@
 
     - Firefox for Windows
     - Firefox for Mac
-    - Chrome for Windows (blurry shadows have some issues)
+    - Firefox for Android
+    - Chrome for Windows
     - Chrome for Mac
+    - Chrome for Android
     - Safari for Windows
     - safari for Mac
     - Safari for iOS (mobile)
