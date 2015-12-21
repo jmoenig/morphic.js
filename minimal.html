@@ -9,10 +9,11 @@
 			window.onload = function () {
 				world = new WorldMorph(document.getElementById('world'));
 				world.isDevMode = true;
-				setInterval(loop, 50);
+				loop();
 			};
 
 			function loop() {
+        requestAnimationFrame(loop);
 				world.doOneCycle();
 			}
 		</script>

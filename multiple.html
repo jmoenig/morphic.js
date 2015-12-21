@@ -11,10 +11,11 @@
 					document.getElementById('world1'), false);
 				world2 = new WorldMorph(
 					document.getElementById('world2'), false);
-				setInterval(loop, 50);
+				loop();
 			};
 
 			function loop() {
+        requestAnimationFrame(loop);
 				world1.doOneCycle();
 				world2.doOneCycle();
 			}
