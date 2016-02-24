@@ -974,7 +974,7 @@
     single submorph's changes tremendous performance improvements can be
     achieved by setting the trackChanges flag to false before propagating
     the layout changes, setting it to true again and then storing the full
-    bounds of the surrounding morph. An an example refer to the
+    bounds of the surrounding morph. As an example refer to the
 
         moveBy()
 
@@ -2188,7 +2188,7 @@ Morph.uber = Node.prototype;
     single submorph's changes tremendous performance improvements can be
     achieved by setting the trackChanges flag to false before propagating
     the layout changes, setting it to true again and then storing the full
-    bounds of the surrounding morph. An an example refer to the
+    bounds of the surrounding morph. As an example refer to the
 
         fixLayout()
 
