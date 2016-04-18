@@ -337,7 +337,7 @@
     (c) an application
     -------------------
     Of course, most of the time you don't want to just plain use the
-    standard Morhic World "as is" out of the box, but write your own
+    standard Morphic World "as is" out of the box, but write your own
     application (something like Scratch!) in it. For such an
     application you'll create your own morph prototypes, perhaps
     assemble your own "window frame" and bring it all to life in a
