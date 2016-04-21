@@ -1938,7 +1938,7 @@ Rectangle.prototype.round = function () {
 Rectangle.prototype.spread = function () {
     // round me by applying floor() to my origin and ceil() to my corner
     // expand by 1 to be on the safe side, this eliminates rounding
-    // artefacts caused by Safari's auto-scaling on retina displays
+    // artifacts caused by Safari's auto-scaling on retina displays
     return this.origin.floor().corner(this.corner.ceil()).expandBy(1);
 };
 
