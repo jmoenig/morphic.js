@@ -1054,10 +1054,9 @@
 
 // Global settings /////////////////////////////////////////////////////
 
-/*global window, HTMLCanvasElement, getMinimumFontHeight, FileReader, Audio,
-FileList, getBlurredShadowSupport*/
+/*global window, HTMLCanvasElement, FileReader, Audio, FileList*/
 
-var morphicVersion = '2016-February-24';
+var morphicVersion = '2016-May-04';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -2088,6 +2087,20 @@ Node.prototype.forAllChildren = function (aFunction) {
         });
     }
     aFunction.call(null, this);
+};
+
+Node.prototype.anyChild = function (aPredicate) {
+    // includes myself
+    var i;
+    if (aPredicate.call(null, this)) {
+        return true;
+    }
+    for (i = 0; i < this.children.length; i += 1) {
+        if (this.children[i].anyChild(aPredicate)) {
+            return true;
+        }
+    }
+    return false;
 };
 
 Node.prototype.allLeafs = function () {
