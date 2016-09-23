@@ -5062,7 +5062,7 @@ CursorMorph.prototype.processKeyPress = function (event) {
 CursorMorph.prototype.processKeyDown = function (event) {
     // this.inspectKeyEvent(event);
     var shift = event.shiftKey,
-        ctrl = event.ctrlKey;
+        wordNavigation = event.ctrlKey || event.metaKey;
 
     this.keyDownEventUsed = false;
     if (event.ctrlKey && (!event.altKey)) {
@@ -5078,13 +5078,13 @@ CursorMorph.prototype.processKeyDown = function (event) {
 
     switch (event.keyCode) {
     case 37:
-        // if Control is pressed, move one word to the left
-        this.goLeft(shift, ctrl ? this.slot - this.target.previousWordFrom(this.slot) : 1);
+        // if Control (or ⌘ in Mac) is pressed, move one word to the left
+        this.goLeft(shift, wordNavigation ? this.slot - this.target.previousWordFrom(this.slot) : 1);
         this.keyDownEventUsed = true;
         break;
     case 39:
-        // if Control is pressed, move one word to the right
-        this.goRight(shift, ctrl ? this.target.nextWordFrom(this.slot) - this.slot : 1);
+        // if Control (or ⌘ in Mac) is pressed, move one word to the right
+        this.goRight(shift, wordNavigation ? this.target.nextWordFrom(this.slot) - this.slot : 1);
         this.keyDownEventUsed = true;
         break;
     case 38:
