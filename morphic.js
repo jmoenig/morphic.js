@@ -8047,8 +8047,13 @@ StringMorph.prototype.deleteSelection = function () {
 };
 
 StringMorph.prototype.selectAll = function () {
+    var cursor;
     if (this.isEditable) {
         this.startMark = 0;
+        cursor = this.root().cursor;
+        if (cursor) {
+            cursor.gotoSlot(this.text.length);
+        }
         this.endMark = this.text.length;
         this.drawNew();
         this.changed();
