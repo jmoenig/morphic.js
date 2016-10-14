@@ -33,18 +33,18 @@
 				hint2.setPosition(hint1.bottomLeft());
 				world.add(hint2);
 
-        loop();
+                                loop();
 			};
 
 			function loop() {
-        requestAnimationFrame(loop);
-        world.doOneCycle();
-			}
+                            requestAnimationFrame(loop);
+                            world.doOneCycle();
+			};
 		</script>
 	</head>
 
-	<body>
-		<canvas id="world" tabindex="1" width="800" height="600" style="position: absolute;">
+	<body style="margin: 0;">
+		<canvas id="world" tabindex="1" width="800" height="600" style="position: absolute; left: 0px; right: 0px; width: 100%; height: 100%;">
 			<p>Your browser doesn't support canvas.</p>
 		</canvas>
 	</body>
