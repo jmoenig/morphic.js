@@ -1136,7 +1136,7 @@
 
 /*global window, HTMLCanvasElement, FileReader, Audio, FileList*/
 
-var morphicVersion = '2016-November-28';
+var morphicVersion = '2016-December-01';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -2016,6 +2016,14 @@ Color.prototype.dansDarker = function () {
         vv = Math.max(hsv[2] - 0.16, 0);
     result.set_hsv(hsv[0], hsv[1], vv);
     return result;
+};
+
+Color.prototype.inverted = function () {
+    return new Color(
+        255 - this.r,
+        255 - this.g,
+        255 - this.b
+    );
 };
 
 // Points //////////////////////////////////////////////////////////////
