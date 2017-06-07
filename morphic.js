@@ -5244,6 +5244,8 @@ CursorMorph.prototype.initializeClipboardHandler = function () {
 
     this.clipboardHandler = document.createElement('textarea');
     this.clipboardHandler.style.position = 'absolute';
+
+    this.clipboardHandler.style.top = window.outerHeight;
     this.clipboardHandler.style.right = '101%'; // placed just out of view
 
     document.body.appendChild(this.clipboardHandler);
