@@ -10350,9 +10350,9 @@ ListMorph.prototype.buildListContents = function () {
             myself.doubleClickAction
         );
     });
-    this.listContents.setPosition(this.contents.position());
     this.listContents.isListContents = true;
     this.listContents.drawNew();
+    this.listContents.setPosition(this.contents.position());
     this.addContents(this.listContents);
 };
 
