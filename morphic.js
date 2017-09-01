@@ -1152,7 +1152,7 @@
     Davide Della Casa contributed performance optimizations for Firefox.
     Jason N (@cyderize) contributed native copy & paste for text editing.
     Bartosz Leper contributed retina display support.
-    Brian Harvey contributed to the design and implemenatation of submenus.
+    Brian Harvey contributed to the design and implementation of submenus.
 
     - Jens Mönig
 */
@@ -1161,7 +1161,7 @@
 
 /*global window, HTMLCanvasElement, FileReader, Audio, FileList*/
 
-var morphicVersion = '2017-August-29';
+var morphicVersion = '2017-September-01';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -8548,15 +8548,18 @@ StringMorph.prototype.mouseDoubleClick = function (pos) {
             slot -= 1;
         }
 
-        if (isWordChar(this.text[slot])) {
+        if (this.text[slot] && isWordChar(this.text[slot])) {
             this.selectWordAt(slot);
-        } else {
+        } else if (this.text[slot]) {
             this.selectBetweenWordsAt(slot);
+        } else {
+            // special case for when we click right after the
+            // last slot in multi line TextMorphs
+            this.selectAll();
         }
     } else {
         this.escalateEvent('mouseDoubleClick', pos);
     }
- 
 };
 
 StringMorph.prototype.selectWordAt = function (slot) {
