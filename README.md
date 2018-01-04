@@ -7,7 +7,7 @@ inspired by Squeak
 written by Jens Mönig
 jens@moenig.org
 
-Copyright (C) 2016 by Jens Mönig
+Copyright (C) 2018 by Jens Mönig
 
 Morphic.js is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
@@ -20,4 +20,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+Want to use Morphic.js but scared by the open-source license? Get in touch,
+we'll make it work.
