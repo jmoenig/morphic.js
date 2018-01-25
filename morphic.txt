@@ -7,9 +7,9 @@
 	written by Jens Mönig
 	jens@moenig.org
 
-	Copyright (C) 2017 by Jens Mönig
+	Copyright (C) 2018 by Jens Mönig
 
-	this documentation last changed: September 01, 2017
+	this documentation last changed: January 25, 2018
 
 	This file is part of Snap!.
 
@@ -86,6 +86,7 @@
             ColorPaletteMorph
                 GrayPaletteMorph
             ColorPickerMorph
+            DialMorph
             FrameMorph
                 ScrollFrameMorph
                     ListMorph
@@ -127,6 +128,7 @@
     CursorMorph
     BoxMorph
     SpeechBubbleMorph
+    DialMorph
     CircleBoxMorph
     SliderButtonMorph
     SliderMorph
