@@ -1,5 +1,6 @@
 let concat = require('gulp-concat');
 let gulp = require('gulp');
+let sourcemaps = require('gulp-sourcemaps');
 let uglify = require('gulp-uglify');
 
 let jsFiles = [
@@ -10,9 +11,11 @@ let jsFiles = [
 
 gulp.task('scripts', function () {
     return gulp.src(jsFiles)
+        .pipe(sourcemaps.init())
         .pipe(concat('morphic.js'))
         .pipe(gulp.dest(jsDest))
         .pipe(concat('morphic.min.js'))
         .pipe(uglify())
+        .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest(jsDest));
 });
