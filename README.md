@@ -1,5 +1,4 @@
-
-morphic.js
+# morphic.js
 
 a lively Web-GUI
 inspired by Squeak
