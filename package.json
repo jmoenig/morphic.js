@@ -1,5 +1,5 @@
 {
-  "name": "morphicgui",
+  "name": "morphic-gui",
   "version": "1.0.0",
   "description": "A lively web-GUI inspired by Squeak",
   "main": "dist/morphic.js",
