@@ -118,12 +118,16 @@ function enableRetinaSupport() {
         };
 
     // [Jens]: only install retina utilities if the display supports them
-    if (backingStorePixelRatio === originalDevicePixelRatio) {return; }
+    if (backingStorePixelRatio === originalDevicePixelRatio) {
+        return;
+    }
     // [Jens]: check whether properties can be overridden, needed for Safari
     if (Object.keys(uber).some(function (any) {
         var prop = uber[any];
         return prop.hasOwnProperty('configurable') && (!prop.configurable);
-    })) {return; }
+    })) {
+        return;
+    }
 
     function getPixelRatio(imageSource) {
         return imageSource.isRetinaEnabled ?
@@ -136,10 +140,10 @@ function enableRetinaSupport() {
     canvasProto._bak = uber;
 
     Object.defineProperty(canvasProto, 'isRetinaEnabled', {
-        get: function() {
+        get: function () {
             return this._isRetinaEnabled;
         },
-        set: function(enabled) {
+        set: function (enabled) {
             var prevPixelRatio = getPixelRatio(this),
                 prevWidth = this.width,
                 prevHeight = this.height;
@@ -154,10 +158,10 @@ function enableRetinaSupport() {
     });
 
     Object.defineProperty(canvasProto, 'width', {
-        get: function() {
+        get: function () {
             return uber.width.get.call(this) / getPixelRatio(this);
         },
-        set: function(width) {
+        set: function (width) {
             try { // workaround one of FF's dreaded NS_ERROR_FAILURE bugs
                 // this should be taken out as soon as FF gets fixed again
                 var pixelRatio = getPixelRatio(this),
@@ -175,10 +179,10 @@ function enableRetinaSupport() {
     });
 
     Object.defineProperty(canvasProto, 'height', {
-        get: function() {
+        get: function () {
             return uber.height.get.call(this) / getPixelRatio(this);
         },
-        set: function(height) {
+        set: function (height) {
             var pixelRatio = getPixelRatio(this),
                 context;
             uber.height.set.call(this, height * pixelRatio);
@@ -189,7 +193,7 @@ function enableRetinaSupport() {
         }
     });
 
-    contextProto.drawImage = function(image) {
+    contextProto.drawImage = function (image) {
         var pixelRatio = getPixelRatio(image),
             sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight;
 
@@ -241,7 +245,7 @@ function enableRetinaSupport() {
             dWidth, dHeight);
     };
 
-    contextProto.getImageData = function(sx, sy, sw, sh) {
+    contextProto.getImageData = function (sx, sy, sw, sh) {
         var pixelRatio = getPixelRatio(this.canvas);
         return uber.getImageData.call(
             this,
@@ -250,40 +254,40 @@ function enableRetinaSupport() {
     };
 
     Object.defineProperty(contextProto, 'shadowOffsetX', {
-        get: function() {
+        get: function () {
             return uber.shadowOffsetX.get.call(this) /
                 getPixelRatio(this.canvas);
         },
-        set: function(offset) {
+        set: function (offset) {
             var pixelRatio = getPixelRatio(this.canvas);
             uber.shadowOffsetX.set.call(this, offset * pixelRatio);
         }
     });
 
     Object.defineProperty(contextProto, 'shadowOffsetY', {
-        get: function() {
+        get: function () {
             return uber.shadowOffsetY.get.call(this) /
                 getPixelRatio(this.canvas);
         },
-        set: function(offset) {
+        set: function (offset) {
             var pixelRatio = getPixelRatio(this.canvas);
             uber.shadowOffsetY.set.call(this, offset * pixelRatio);
         }
     });
 
     Object.defineProperty(contextProto, 'shadowBlur', {
-        get: function() {
+        get: function () {
             return uber.shadowBlur.get.call(this) /
                 getPixelRatio(this.canvas);
         },
-        set: function(blur) {
+        set: function (blur) {
             var pixelRatio = getPixelRatio(this.canvas);
             uber.shadowBlur.set.call(this, blur * pixelRatio);
         }
     });
 }
 
-function isRetinaSupported () {
+function isRetinaSupported() {
     var ctx = document.createElement("canvas").getContext("2d"),
         backingStorePixelRatio = ctx.webkitBackingStorePixelRatio ||
             ctx.mozBackingStorePixelRatio ||
@@ -325,7 +329,7 @@ function isRetinaSupported () {
         );
 }
 
-function isRetinaEnabled () {
+function isRetinaEnabled() {
     return HTMLCanvasElement.prototype.hasOwnProperty('_isRetinaEnabled');
 }
 
@@ -333,7 +337,9 @@ function disableRetinaSupport() {
     // uninstalls Retina utilities. Make sure to re-create every Canvas
     // element afterwards
     var canvasProto, contextProto, uber;
-    if (!isRetinaEnabled()) {return; }
+    if (!isRetinaEnabled()) {
+        return;
+    }
     canvasProto = HTMLCanvasElement.prototype;
     contextProto = CanvasRenderingContext2D.prototype;
     uber = canvasProto._bak;
@@ -353,10 +359,14 @@ function normalizeCanvas(aCanvas, getCopy) {
     // make sure aCanvas is non-retina, otherwise convert it in place (!)
     // or answer a normalized copy if the "getCopy" flag is <true>
     var cpy;
-    if (!aCanvas.isRetinaEnabled) {return aCanvas; }
+    if (!aCanvas.isRetinaEnabled) {
+        return aCanvas;
+    }
     cpy = newCanvas(new Point(aCanvas.width, aCanvas.height), true);
     cpy.getContext('2d').drawImage(aCanvas, 0, 0);
-    if (getCopy) {return cpy; }
+    if (getCopy) {
+        return cpy;
+    }
     aCanvas.isRetinaEnabled = false;
     aCanvas.width = cpy.width;
     aCanvas.height = cpy.height;

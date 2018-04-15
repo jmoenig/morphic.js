@@ -1,4 +1,3 @@
-
 // Color instance creation:
 
 function Color(r, g, b, a) {
@@ -28,7 +27,7 @@ Color.prototype.toRGBstring = function () {
 
 Color.fromString = function (aString) {
     // I parse rgb/rgba strings into a Color object
-    var components = aString.split(/[\(),]/).slice(1,5);
+    var components = aString.split(/[\(),]/).slice(1, 5);
     return new Color(components[0], components[1], components[2], components[3]);
 };
 

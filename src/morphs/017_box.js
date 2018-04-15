@@ -1,4 +1,3 @@
-
 // I can have an optionally rounded border
 
 var BoxMorph;

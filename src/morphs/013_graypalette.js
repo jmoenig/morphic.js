@@ -1,4 +1,3 @@
-
 var GrayPaletteMorph;
 
 // GrayPaletteMorph inherits from ColorPaletteMorph:

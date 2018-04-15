@@ -1,4 +1,3 @@
-
 /*
     Animations handle gradual transitions between one state and another over a
     period of time. Transition effects can be specified using easing functions.
@@ -50,8 +49,12 @@ Animation.prototype.easings = {
     // two states
 
     // ease both in and out:
-    linear: function (t) {return t; },
-    sinusoidal: function (t) {return 1 - Math.cos(radians(t * 90)); },
+    linear: function (t) {
+        return t;
+    },
+    sinusoidal: function (t) {
+        return 1 - Math.cos(radians(t * 90));
+    },
     quadratic: function (t) {
         return t < 0.5 ?
             2 * t * t
@@ -69,17 +72,29 @@ Animation.prototype.easings = {
     },
 
     // ease in only:
-    sine_in: function (t) {return 1 - Math.sin(radians(90 + (t * 90))); },
-    quad_in: function (t) {return t * t; },
-    cubic_in: function (t) {return t * t * t; },
+    sine_in: function (t) {
+        return 1 - Math.sin(radians(90 + (t * 90)));
+    },
+    quad_in: function (t) {
+        return t * t;
+    },
+    cubic_in: function (t) {
+        return t * t * t;
+    },
     elastic_in: function (t) {
         return (0.04 - 0.04 / t) * Math.sin(25 * t) + 1;
     },
 
     // ease out only:
-    sine_out: function (t) {return Math.sin(radians(t * 90)); },
-    quad_out: function (t) {return t * (2 - t); },
-    elastic_out: function (t) {return 0.04 * t / (--t) * Math.sin(25 * t); }
+    sine_out: function (t) {
+        return Math.sin(radians(t * 90));
+    },
+    quad_out: function (t) {
+        return t * (2 - t);
+    },
+    elastic_out: function (t) {
+        return 0.04 * t / (--t) * Math.sin(25 * t);
+    }
 };
 
 Animation.prototype.start = function () {
@@ -92,12 +107,16 @@ Animation.prototype.start = function () {
 };
 
 Animation.prototype.step = function () {
-    if (!this.isActive) {return; }
+    if (!this.isActive) {
+        return;
+    }
     var now = Date.now();
     if (now > this.endTime) {
         this.setter(this.destination);
         this.isActive = false;
-        if (this.onComplete) {this.onComplete(); }
+        if (this.onComplete) {
+            this.onComplete();
+        }
     } else {
         this.setter(
             this.destination -

@@ -1,4 +1,3 @@
-
 // Morph: referenced constructors
 
 var Morph;
@@ -75,7 +74,9 @@ Morph.prototype.init = function (noDraw) {
     this.isTemplate = false;
     this.acceptsDrops = false;
     this.noticesTransparentClick = false;
-    if (!noDraw) {this.drawNew(); }
+    if (!noDraw) {
+        this.drawNew();
+    }
     this.fps = 0;
     this.customContextMenu = null;
     this.lastTime = Date.now();
@@ -367,7 +368,9 @@ Morph.prototype.keepWithin = function (aMorph) {
 Morph.prototype.scrollIntoView = function () {
     var leftOff, rightOff, topOff, bottomOff,
         sf = this.parentThatIsA(ScrollFrameMorph);
-    if (!sf) {return; }
+    if (!sf) {
+        return;
+    }
     rightOff = Math.min(
         this.fullBounds().right() - sf.right(),
         sf.contents.right() - sf.right()
@@ -548,7 +551,9 @@ Morph.prototype.fullDrawOn = function (aCanvas, aRect) {
     }
     rectangle = aRect || this.cachedFullBounds || this.fullBounds();
     this.drawOn(aCanvas, rectangle);
-    if (this.cachedFullImage) {return; }
+    if (this.cachedFullImage) {
+        return;
+    }
     this.children.forEach(function (child) {
         child.fullDrawOn(aCanvas, rectangle);
     });
@@ -789,14 +794,18 @@ Morph.prototype.addBack = function (aMorph) {
 
 Morph.prototype.topMorphAt = function (point) {
     var i, result;
-    if (!this.isVisible) {return null; }
+    if (!this.isVisible) {
+        return null;
+    }
     for (i = this.children.length - 1; i >= 0; i -= 1) {
         result = this.children[i].topMorphAt(point);
-        if (result) {return result; }
+        if (result) {
+            return result;
+        }
     }
     return this.bounds.containsPoint(point) &&
-        (this.noticesTransparentClick || !this.isTransparentAt(point)) ? this
-              : null;
+    (this.noticesTransparentClick || !this.isTransparentAt(point)) ? this
+        : null;
 };
 
 Morph.prototype.topMorphSuchThat = function (predicate) {
@@ -932,7 +941,9 @@ Morph.prototype.updateReferences = function (map) {
         value = this[property];
         if (value && value.isMorph) {
             reference = map.get(value);
-            if (reference) { this[property] = reference; }
+            if (reference) {
+                this[property] = reference;
+            }
         }
     }
 };
@@ -947,9 +958,9 @@ Morph.prototype.rootForGrab = function () {
         return this.parent;
     }
     if (this.parent === null ||
-            this.parent instanceof WorldMorph ||
-            this.parent instanceof FrameMorph ||
-            this.isDraggable === true) {
+        this.parent instanceof WorldMorph ||
+        this.parent instanceof FrameMorph ||
+        this.isDraggable === true) {
         return this;
     }
     return this.parent.rootForGrab();
@@ -965,8 +976,8 @@ Morph.prototype.isCorrectingOutsideDrag = function () {
 Morph.prototype.wantsDropOf = function (aMorph) {
     // default is to answer the general flag - change for my heirs
     if ((aMorph instanceof HandleMorph) ||
-            (aMorph instanceof MenuMorph) ||
-            (aMorph instanceof InspectorMorph)) {
+        (aMorph instanceof MenuMorph) ||
+        (aMorph instanceof InspectorMorph)) {
         return false;
     }
     return this.acceptsDrops;
@@ -1012,12 +1023,18 @@ Morph.prototype.slideBackTo = function (
         null, // easing
         function () {
             situation.origin.add(myself);
-            if (onBeforeDrop) {onBeforeDrop(); }
-            if (myself.justDropped) {myself.justDropped(); }
+            if (onBeforeDrop) {
+                onBeforeDrop();
+            }
+            if (myself.justDropped) {
+                myself.justDropped();
+            }
             if (situation.origin.reactToDropOf) {
                 situation.origin.reactToDropOf(myself);
             }
-            if (onComplete) {onComplete(); }
+            if (onComplete) {
+                onComplete();
+            }
         }
     );
 };
@@ -1028,16 +1045,24 @@ Morph.prototype.glideTo = function (endPoint, msecs, easing, onComplete) {
     var world = this.world(),
         myself = this;
     world.animations.push(new Animation(
-        function (x) {myself.setLeft(x); },
-        function () {return myself.left(); },
+        function (x) {
+            myself.setLeft(x);
+        },
+        function () {
+            return myself.left();
+        },
         -(this.left() - endPoint.x),
         msecs || 100,
         easing,
         onComplete
     ));
     world.animations.push(new Animation(
-        function (y) {myself.setTop(y); },
-        function () {return myself.top(); },
+        function (y) {
+            myself.setTop(y);
+        },
+        function () {
+            return myself.top();
+        },
         -(this.top() - endPoint.y),
         msecs || 100,
         easing
@@ -1058,13 +1083,17 @@ Morph.prototype.fadeTo = function (endAlpha, msecs, easing, onComplete) {
             myself.alpha = n;
             myself.changed();
         },
-        function () {return myself.alpha; },
+        function () {
+            return myself.alpha;
+        },
         endAlpha - this.alpha,
         msecs || 200,
         easing,
         function () {
             myself.alpha = oldAlpha;
-            if (onComplete) {onComplete(); }
+            if (onComplete) {
+                onComplete();
+            }
         }
     ));
 };
@@ -1077,7 +1106,9 @@ Morph.prototype.perish = function (msecs, onComplete) {
         null,
         function () {
             myself.destroy();
-            if (onComplete) {onComplete(); }
+            if (onComplete) {
+                onComplete();
+            }
         }
     );
 };
@@ -1246,7 +1277,7 @@ Morph.prototype.pickColor = function (
 
 Morph.prototype.inspect = function (anotherObject) {
     var world = this.world instanceof Function ?
-            this.world() : this.root() || this.world,
+        this.world() : this.root() || this.world,
         inspector,
         inspectee = this;
 
@@ -1290,11 +1321,11 @@ Morph.prototype.hierarchyMenu = function () {
                 each.toString().slice(0, 50),
                 each.developersMenu()
             );
-        /*
-            menu.addItem(each.toString().slice(0, 50), function () {
-                each.developersMenu().popUpAtHand(world);
-            });
-        */
+            /*
+                menu.addItem(each.toString().slice(0, 50), function () {
+                    each.developersMenu().popUpAtHand(world);
+                });
+            */
         }
     });
     return menu;
@@ -1343,7 +1374,7 @@ Morph.prototype.developersMenu = function () {
         "resize...",
         'resize',
         'show a handle\nwhich can be dragged\nto change this morph.js\'s' +
-            ' extent'
+        ' extent'
     );
     menu.addLine();
     menu.addItem(
@@ -1502,11 +1533,11 @@ Morph.prototype.previousEntryField = function (current) {
 };
 
 Morph.prototype.tab = function (editField) {
-/*
-    the <tab> key was pressed in one of my edit fields.
-    invoke my "nextTab()" function if it exists, else
-    propagate it up my owner chain.
-*/
+    /*
+        the <tab> key was pressed in one of my edit fields.
+        invoke my "nextTab()" function if it exists, else
+        propagate it up my owner chain.
+    */
     if (this.nextTab) {
         this.nextTab(editField);
     } else if (this.parent) {
@@ -1515,11 +1546,11 @@ Morph.prototype.tab = function (editField) {
 };
 
 Morph.prototype.backTab = function (editField) {
-/*
-    the <back tab> key was pressed in one of my edit fields.
-    invoke my "previousTab()" function if it exists, else
-    propagate it up my owner chain.
-*/
+    /*
+        the <back tab> key was pressed in one of my edit fields.
+        invoke my "previousTab()" function if it exists, else
+        propagate it up my owner chain.
+    */
     if (this.previousTab) {
         this.previousTab(editField);
     } else if (this.parent) {
@@ -1665,7 +1696,7 @@ HandleMorph.prototype.init = function (
     this.target = target || null;
     this.minExtent = new Point(minX || 0, minY || 0);
     this.inset = new Point(insetX || 0, insetY || insetX || 0);
-    this.type =  type || 'resize'; // also: 'move', 'moveCenter', 'movePivot'
+    this.type = type || 'resize'; // also: 'move', 'moveCenter', 'movePivot'
     HandleMorph.uber.init.call(this);
     this.color = new Color(255, 255, 255);
     this.isDraggable = false;

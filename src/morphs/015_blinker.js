@@ -1,4 +1,3 @@
-
 // can be used for text cursors
 
 var BlinkerMorph;

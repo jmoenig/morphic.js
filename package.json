@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "./node_modules/.bin/webpack --config=./webpack.config.js --mode=development",
     "production": "./node_modules/.bin/webpack --config=./webpack.config.js --mode=production",
-    "prepare": "gulp scripts"
+    "prepare": "node_modules/.bin/gulp scripts"
   },
   "repository": {
     "type": "git",

@@ -140,15 +140,25 @@ PenMorph.prototype.setRotation = function () {
     }
     menu = new MenuMorph(this, name);
     dial = new DialMorph(null, null, this.heading);
-    dial.rootForGrab = function () {return this; };
+    dial.rootForGrab = function () {
+        return this;
+    };
     dial.target = this;
     dial.action = 'setHeading';
     menu.items.push(dial);
     menu.addLine();
-    menu.addItem('(90) right', function () {this.setHeading(90); });
-    menu.addItem('(-90) left', function () {this.setHeading(-90); });
-    menu.addItem('(0) up', function () {this.setHeading(0); });
-    menu.addItem('(180) down', function () {this.setHeading(180); });
+    menu.addItem('(90) right', function () {
+        this.setHeading(90);
+    });
+    menu.addItem('(-90) left', function () {
+        this.setHeading(-90);
+    });
+    menu.addItem('(0) up', function () {
+        this.setHeading(0);
+    });
+    menu.addItem('(180) down', function () {
+        this.setHeading(180);
+    });
     menu.isDraggable = true;
     menu.popUpAtHand(this.world());
 };

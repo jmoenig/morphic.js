@@ -279,7 +279,7 @@ Rectangle.prototype.intersects = function (aRect) {
 Rectangle.prototype.isNearTo = function (aRect, threshold) {
     var ro = aRect.origin, rc = aRect.corner, border = threshold || 0;
     return (rc.x + border >= this.origin.x) &&
-        (rc.y  + border >= this.origin.y) &&
+        (rc.y + border >= this.origin.y) &&
         (ro.x - border <= this.corner.x) &&
         (ro.y - border <= this.corner.y);
 };

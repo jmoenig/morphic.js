@@ -1,5 +1,3 @@
-
-
 // ColorPickerMorph inherits from Morph:
 
 ColorPickerMorph.prototype = new Morph();
