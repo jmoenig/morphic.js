@@ -19,3 +19,9 @@ gulp.task('scripts', function () {
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest(jsDest));
 });
+
+gulp.task('default', ['scripts']);
+
+gulp.task('watch', function() {
+    gulp.watch(['src/*.js', 'src/**/*.js'], ['scripts'])
+});

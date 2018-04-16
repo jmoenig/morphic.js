@@ -4,9 +4,15 @@
   "description": "A lively web-GUI inspired by Squeak",
   "main": "dist/morphic.js",
   "scripts": {
-    "dev": "./node_modules/.bin/webpack --config=./webpack.config.js --mode=development",
-    "production": "./node_modules/.bin/webpack --config=./webpack.config.js --mode=production",
-    "prepare": "node_modules/.bin/gulp scripts"
+    "dev": "npm run prepare",
+    "prepare": "node_modules/.bin/gulp"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-sourcemaps": "^2.6.4",
+    "gulp-uglify": "^3.0.0"
   },
   "repository": {
     "type": "git",
@@ -22,12 +28,5 @@
   "bugs": {
     "url": "https://github.com/jmoenig/morphic.js/issues"
   },
-  "homepage": "https://github.com/menasheh/morphic.js#readme",
-  "devDependencies": {
-    "gulp": "^3.9.1",
-    "gulp-concat": "^2.6.1",
-    "gulp-sourcemaps": "^2.6.4",
-    "gulp-uglify": "^3.0.0"
-  },
-  "dependencies": {}
+  "homepage": "https://github.com/menasheh/morphic.js#readme"
 }
