@@ -1,0 +1,32 @@
+{
+  "name": "morphic-gui",
+  "version": "1.0.1",
+  "description": "A lively web-GUI inspired by Squeak",
+  "main": "dist/morphic.js",
+  "scripts": {
+    "dev": "npm run prepare",
+    "prepare": "node_modules/.bin/gulp"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-sourcemaps": "^2.6.4",
+    "gulp-uglify": "^3.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com/menasheh/morphic.js.git"
+  },
+  "keywords": [
+    "morphic",
+    "snap",
+    "gui"
+  ],
+  "author": "Jens Mönig",
+  "license": "AGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/jmoenig/morphic.js/issues"
+  },
+  "homepage": "https://github.com/menasheh/morphic.js#readme"
+}
