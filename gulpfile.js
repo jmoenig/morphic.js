@@ -4,8 +4,41 @@ let sourcemaps = require('gulp-sourcemaps');
 let uglify = require('gulp-uglify');
 
 let jsFiles = [
-        'src/*.js',
-        'src/morphs/*.js'
+        'src/settings.js',
+        'src/functions.js',
+        'src/retina.js',
+        'src/animations.js',
+        'src/colors.js',
+        'src/points.js',
+        'src/rectangle.js',
+        'src/node.js',
+        'src/morphs/morph.js',
+        'src/morphs/pen.js',
+        'src/morphs/colorpalette.js',
+        'src/morphs/graypalette.js',
+        'src/morphs/colorpicker.js',
+        'src/morphs/blinker.js',
+        'src/morphs/cursor.js',
+        'src/morphs/box.js',
+        'src/morphs/speechbubble.js',
+        'src/morphs/dial.js',
+        'src/morphs/circlebox.js',
+        'src/morphs/sliderbutton.js',
+        'src/morphs/slider.js',
+        'src/morphs/mousesensor.js',
+        'src/morphs/inspector.js',
+        'src/morphs/menu.js',
+        'src/morphs/string.js',
+        'src/morphs/text.js',
+        'src/morphs/trigger.js',
+        'src/morphs/menuitem.js',
+        'src/morphs/frame.js',
+        'src/morphs/scrollframe.js',
+        'src/morphs/list.js',
+        'src/morphs/stringfield.js',
+        'src/morphs/bouncer.js',
+        'src/morphs/hand.js',
+        'src/morphs/world.js',
     ],
     jsDest = 'dist/';
 
@@ -23,5 +56,5 @@ gulp.task('scripts', function () {
 gulp.task('default', ['scripts']);
 
 gulp.task('watch', function() {
-    gulp.watch(['src/*.js', 'src/**/*.js'], ['scripts'])
+    gulp.watch(['src/**/*.js'], ['scripts'])
 });
