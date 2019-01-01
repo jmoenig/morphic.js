@@ -1,12 +1,14 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 	<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<title>Morphic!</title>
 		<script type="text/javascript" src="morphic.js"></script>
 		<script type="text/javascript">			
 			var	world1, world2; 
 
 			window.onload = function () {
+                disableRetinaSupport();
 				world1 = new WorldMorph(
 					document.getElementById('world1'), false);
 				world2 = new WorldMorph(
@@ -23,12 +25,8 @@
 	</head>
 	<body>
 		<p>first world:</p>
-		<canvas id="world1" tabindex="1" width="600" height="400">
-			<p>Your browser doesn't support canvas.</p>
-		</canvas>
+		<canvas id="world1" tabindex="1" width="600" height="400" />
 		<p>second world:</p>
-		<canvas id="world2" tabindex="2" width="400" height="600">
-			<p>Your browser doesn't support canvas.</p>
-		</canvas>
+		<canvas id="world2" tabindex="2" width="400" height="600" />
 	</body>
 </html>
