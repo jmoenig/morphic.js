@@ -2035,6 +2035,80 @@ Color.prototype.set_hsv = function (h, s, v) {
 
 };
 
+// Color conversion (hsl):
+
+Color.prototype.hsl = function () {
+    // ignore alpha
+    var rr = this.r / 255,
+        gg = this.g / 255,
+        bb = this.b / 255,
+        max = Math.max(rr, gg, bb), min = Math.min(rr, gg, bb),
+        h,
+        s,
+        l = (max + min) / 2,
+        d;
+    if (max === min) { // achromatic
+        h = 0;
+        s = 0;
+    } else {
+        d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+        case rr:
+            h = (gg - bb) / d + (gg < bb ? 6 : 0);
+            break;
+        case gg:
+            h = (bb - rr) / d + 2;
+            break;
+        case bb:
+            h = (rr - gg) / d + 4;
+            break;
+        }
+        h /= 6;
+    }
+    return [h, s, l];
+};
+
+Color.prototype.set_hsl = function (h, s, l) {
+    // ignore alpha, h, s and l are to be within [0, 1]
+    var q, p;
+
+    function hue2rgb(p, q, t) {
+        if (t < 0) {
+            t += 1;
+        }
+        if (t > 1) {
+            t -= 1;
+        }
+        if (t < 1/6) {
+            return p + (q - p) * 6 * t;
+        }
+        if (t < 1/2) {
+            return q;
+        }
+        if (t < 2/3) {
+            return p + (q - p) * (2/3 - t) * 6;
+        }
+        return p;
+    }
+
+    if (s == 0) { // achromatic
+        this.r = l;
+        this.g = l;
+        this.b = l;
+    } else {
+        q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        p = 2 * l - q;
+        this.r = hue2rgb(p, q, h + 1/3);
+        this.g = hue2rgb(p, q, h);
+        this.b = hue2rgb(p, q, h - 1/3);
+    }
+
+    this.r *= 255;
+    this.g *= 255;
+    this.b *= 255;
+};
+
 // Color mixing:
 
 Color.prototype.mixed = function (proportion, otherColor) {
