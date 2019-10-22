@@ -1169,6 +1169,7 @@
     Michael Ball found and fixed a longstanding scrolling bug.
     Brian Harvey contributed to the design and implementation of submenus.
     Ken Kahn contributed to Chinese keboard entry and Android support.
+    Brian Broll contributed clickable URLs in text elements.
 
     - Jens Mönig
 */
@@ -1177,7 +1178,7 @@
 
 /*global window, HTMLCanvasElement, FileReader, Audio, FileList, Map*/
 
-var morphicVersion = '2019-October-16';
+var morphicVersion = '2019-October-22';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
