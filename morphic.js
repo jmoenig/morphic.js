@@ -9612,6 +9612,7 @@ TextMorph.prototype.slotAt = function (aPoint) {
     var charX,
         row = 0,
         col = 0,
+        columnLength,
         shadowHeight = Math.abs(this.shadowOffset.y),
         context = this.image.getContext('2d'),
         textWidth;
@@ -9630,7 +9631,8 @@ TextMorph.prototype.slotAt = function (aPoint) {
     } else { // 'left'
         charX = 0;
     }
-    while (aPoint.x - this.left() > charX) {
+    columnLength = this.lines[row - 1].length;
+    while (col < columnLength - 2 && aPoint.x - this.left() > charX) {
         charX += context.measureText(this.lines[row - 1][col]).width;
         col += 1;
     }
