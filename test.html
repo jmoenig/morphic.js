@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+	<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>Morphic!</title>
+		<script type="text/javascript" src="morphic.js"></script>
+		<script type="text/javascript">			
+
+			var	worldCanvas, world, mo, hi, hint1, hint2, tm;
+
+			window.onload = function () {
+				worldCanvas = document.getElementById('world');
+				world = new WorldMorph(worldCanvas);
+                world.worldCanvas.focus();
+				world.isDevMode = true;
+
+                mo = new Morph();
+                mo.isDraggable = true;
+                mo.setPosition(new Point(150, 270));
+                world.add(mo);
+
+                mo = new CircleBoxMorph();
+                mo.isDraggable = true;
+                mo.setPosition(new Point(150, 50));
+                mo.color = new Color(200, 100, 10);
+                mo.setExtent(new Point(200, 100));
+                world.add(mo);
+                new HandleMorph(mo);
+
+                mo = new Morph();
+                mo.isDraggable = true;
+                mo.setPosition(new Point(450, 350));
+                mo.color = new Color(100, 200, 10);
+                mo.setExtent(new Point(40, 170));
+                world.add(mo);
+                new HandleMorph(mo); // , null, null, null, null, 'moveCenter');
+
+                mo = new Morph();
+                mo.isDraggable = true;
+                mo.setPosition(new Point(650, 250));
+                mo.color = new Color(100, 10, 200);
+                mo.setExtent(new Point(120, 270));
+                world.add(mo);
+
+                mo = new BlinkerMorph();
+                mo.isDraggable = true;
+                mo.setPosition(new Point(50, 350));
+                world.add(mo);
+
+                mo = new BoxMorph(30, 5, new Color(20, 5, 100));
+                mo.isDraggable = true;
+                mo.setPosition(new Point(30, 400));
+                mo.color = new Color(200, 0, 200);
+                mo.setExtent(new Point(180, 120));
+                world.add(mo);
+                new HandleMorph(mo); // , null, null, null, null, 'moveCenter');
+
+                mo = new DialMorph();
+                // mo.isDraggable = true;
+                mo.setPosition(new Point(500, 40));
+                world.add(mo);
+                // new HandleMorph(mo); // , null, null, null, null, 'moveCenter');
+
+                hi = new StringMorph(
+                    'Hello, World!', 48, 'serif');
+                hi.isDraggable = true;
+                hi.isEditable = true;
+                hi.setPosition(new Point(275, 200));
+                world.add(hi);
+
+                hint1 = new StringMorph(
+                    'right click...', 20, 'serif');
+                hint1.isDraggable = true;
+                hint1.isEditable = true;
+                hint1.setPosition(new Point(350, 270));
+                world.add(hint1);
+                
+                hint2 = new StringMorph(
+                    '(or double touch)', 10, 'sans-serif');
+                hint2.isDraggable = true;
+                hint2.isEditable = true;
+                hint2.setPosition(hint1.bottomLeft());
+                world.add(hint2);
+
+                tm = new TextMorph(
+                    "Ich wei\u00DF nicht, was soll es bedeuten, dass ich so " +
+                        "traurig bin, ein M\u00E4rchen aus uralten Zeiten, das " +
+                        "kommt mir nicht aus dem Sinn. Die Luft ist k\u00FChl " +
+                        "und es dunkelt, und ruhig flie\u00DFt der Rhein; der " +
+                        "Gipfel des Berges funkelt im Abendsonnenschein. " +
+                        "Die sch\u00F6nste Jungfrau sitzet dort oben wunderbar, " +
+                        "ihr gold'nes Geschmeide blitzet, sie k\u00E4mmt ihr " +
+                        "goldenes Haar, sie k\u00E4mmt es mit goldenem Kamme, " +
+                        "und singt ein Lied dabei; das hat eine wundersame, " +
+                        "gewalt'ge Melodei. Den Schiffer im kleinen " +
+                        "Schiffe, ergreift es mit wildem Weh; er schaut " +
+                        "nicht die Felsenriffe, er schaut nur hinauf in " +
+                        "die H\u00F6h'. Ich glaube, die Wellen verschlingen " +
+                        "am Ende Schiffer und Kahn, und das hat mit ihrem " +
+                        "Singen, die Loreley getan."
+                );
+                tm.isEditable = true;
+                tm.isDraggable = true;
+                tm.maxWidth = 300;
+                // mo.backgroundColor = new Color(255, 255, 180);
+                // tm.alignment = 'right';
+                tm.fixLayout();
+                tm.setPosition(new Point(800, 50));
+                world.add(tm);
+                new HandleMorph(tm);
+
+                mo = new SpeechBubbleMorph('Morphic\nrocks.');
+                mo.isClickable = true;
+                mo.isDraggable = true;
+                // mo.popUp(world, new Point(850, 400), true);
+                mo.setPosition(new Point(350, 400));
+                world.add(mo);
+                // new HandleMorph(mo);
+
+                mo = new FrameMorph();
+                mo.isDraggable = true;
+                mo.setPosition(new Point(820, 300));
+                mo.setExtent(new Point(300, 250));
+                world.add(mo);
+
+                mo = new SliderButtonMorph('vertical');
+                mo.setPosition(new Point(50, 50));
+                world.add(mo);
+
+                mo = new SliderButtonMorph('horizontal');
+                mo.setPosition(new Point(50, 10));
+                mo.setExtent(new Point(200, 20));
+                world.add(mo);
+
+                mo = new SliderMorph();
+                mo.setPosition(new Point(600, 200));
+                mo.setExtent(new Point(15, 300));
+                mo.fixLayout();
+                world.add(mo);
+
+                mo = new ScrollFrameMorph();
+                mo.contents.acceptsDrops = true;
+                mo.contents.adjustBounds();
+                mo.setPosition(new Point(1200, 50));
+                mo.setExtent(new Point(350, 250));
+                world.add(mo);
+                new HandleMorph(mo);
+
+                mo = new TriggerMorph(
+                    null, // target
+                    function () {console.log('tiggered'); },
+                    'Click!',
+                    null, // font size
+                    null, // font style
+                    null, // environment
+                    'this is a hint',
+                    null, // label color
+                    null, // bold
+                    null, // italic
+                    function () {alert('double clicked'); }
+                    
+                );
+                mo.setPosition(new Point(600, 550));
+                // mo.setExtent(new Point(15, 300));
+                // mo.fixLayout();
+                world.add(mo);
+
+                loop();
+			};
+
+			function loop() {
+                            requestAnimationFrame(loop);
+                            world.doOneCycle();
+			};
+		</script>
+	</head>
+
+	<body style="margin: 0;">
+		<canvas id="world" tabindex="1" width="800" height="600" style="position: absolute; left: 0px; right: 0px; width: 100%; height: 100%;" />
+	</body>
+</html>
