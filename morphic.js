@@ -305,7 +305,7 @@
 
                 window.onload = function () {
                     world = new WorldMorph(document.getElementById('world'));
-                    world.worldCanvas.focus();
+                    // +++ world.worldCanvas.focus();
                     world.isDevMode = true;
                     loop();
                 };
@@ -401,7 +401,7 @@
 
                     worldCanvas = document.getElementById('world');
                     world = new WorldMorph(worldCanvas);
-                    world.worldCanvas.focus();
+                    // +++ world.worldCanvas.focus();
                     world.isDevMode = false;
                     world.setColor(new Color());
 
@@ -1172,7 +1172,7 @@
 
 /*global window, HTMLCanvasElement, FileReader, Audio, FileList, Map*/
 
-var morphicVersion = '2020-January-26';
+var morphicVersion = '2020-January-27';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -12171,7 +12171,7 @@ WorldMorph.prototype.initEventListeners = function () {
         "mousedown",
         function (event) {
             event.preventDefault();
-            canvas.focus();
+            // +++ canvas.focus();
             myself.hand.processMouseDown(event);
         },
         false
@@ -12791,7 +12791,7 @@ WorldMorph.prototype.stopEditing = function () {
         this.virtualKeyboard = null;
     }
     this.lastEditedText = null;
-    this.worldCanvas.focus();
+    // +++ this.worldCanvas.focus();
 };
 
 WorldMorph.prototype.toggleBlurredShadows = function () {
