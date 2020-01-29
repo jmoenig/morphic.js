@@ -3395,14 +3395,11 @@ Morph.prototype.getImage = function () {
 Morph.prototype.render = function (aContext) {
     aContext.fillStyle = this.color.toString();
     aContext.fillRect(0, 0, this.width(), this.height());
-
-/* // redesign textures // +++
     if (this.cachedTexture) {
-        this.renderCachedTextureOn(aCanvas, shiftBy);
+        this.renderCachedTexture(aContext);
     } else if (this.texture) {
-        this.renderTexture(aCanvas, shiftBy);
+        this.renderTexture(this.texture, aContext);
     }
-*/
 };
 
 Morph.prototype.fixLayout = function () {
@@ -3414,40 +3411,38 @@ Morph.prototype.fixLayout = function () {
 
 // Morph displaying:
 
-Morph.prototype.drawTexture = function (url) {
-    var myself = this;
+Morph.prototype.renderTexture = function (url, ctx) {
     this.cachedTexture = new Image();
-    this.cachedTexture.onload = function () {
-        myself.drawCachedTexture();
+    this.cachedTexture.onload = () => {
+        var pos = this.position();
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.translate(pos.x, pos.y);
+        this.renderCachedTexture(ctx);
+        ctx.restore();
     };
     this.cachedTexture.src = this.texture = url; // make absolute
 };
 
-Morph.prototype.drawCachedTexture = function () { // +++ redesign textures
+Morph.prototype.renderCachedTexture = function (ctx) {
     var bg = this.cachedTexture,
-        cols = Math.floor(this.image.width / bg.width), // +++ review
-        lines = Math.floor(this.image.height / bg.height), // +++ review
+        cols = Math.floor(this.width() / bg.width),
+        lines = Math.floor(this.height() / bg.height),
         x,
-        y,
-        context = this.image.getContext('2d'); // +++ review
+        y;
 
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, 0, this.width(), this.height());
+    ctx.clip();
     for (y = 0; y <= lines; y += 1) {
         for (x = 0; x <= cols; x += 1) {
-            context.drawImage(bg, x * bg.width, y * bg.height);
+            ctx.drawImage(bg, x * bg.width, y * bg.height);
         }
     }
+    ctx.restore();
     this.changed();
 };
-
-/*
-Morph.prototype.drawCachedTexture = function () {
-    var context = this.image.getContext('2d'),
-        pattern = context.createPattern(this.cachedTexture, 'repeat');
-    context.fillStyle = pattern;
-    context.fillRect(0, 0, this.image.width, this.image.height);
-    this.changed();
-};
-*/
 
 Morph.prototype.drawOn = function (aContext, aRect) {
     var area = aRect.intersect(this.bounds),
