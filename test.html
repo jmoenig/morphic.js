@@ -24,6 +24,7 @@
                 mo.setPosition(new Point(150, 50));
                 mo.color = new Color(200, 100, 10);
                 mo.setExtent(new Point(200, 100));
+                mo.holes.push(new Point(50, 20).extent(new Point(150, 60)));
                 world.add(mo);
                 new HandleMorph(mo);
 
@@ -40,6 +41,8 @@
                 mo.setPosition(new Point(650, 250));
                 mo.color = new Color(100, 10, 200);
                 mo.setExtent(new Point(120, 270));
+                mo.holes.push(new Point(20, 20).extent(new Point(150, 60)));
+                mo.holes.push(new Point(20, 120).extent(new Point(150, 60)));
                 world.add(mo);
 
                 mo = new BlinkerMorph();

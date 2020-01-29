@@ -59,10 +59,8 @@
      "trackChanges" and other damage-list housekeeping tweaks are no longer
      needed and no longer supported
 
-
-     ideas, not yet implemented:
-
-     "untouchable" flag for whole Morphs, or "hole" paths (single path) in Morph
+     holes:
+     Morphs have a list of rectangles representing "untouchable" areas
 
 
     documentation contents
@@ -1172,7 +1170,7 @@
 
 /*global window, HTMLCanvasElement, FileReader, Audio, FileList, Map*/
 
-var morphicVersion = '2020-January-27';
+var morphicVersion = '2020-January-29';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -1196,7 +1194,8 @@ var standardSettings = {
     isTouchDevice: false, // turned on by touch events, don't set
     rasterizeSVGs: false,
     isFlat: false,
-    grabThreshold: 5
+    grabThreshold: 5,
+    showHoles: false
 };
 
 var touchScreenSettings = {
@@ -1216,7 +1215,8 @@ var touchScreenSettings = {
     isTouchDevice: false,
     rasterizeSVGs: false,
     isFlat: false,
-    grabThreshold: 5
+    grabThreshold: 5,
+    showHoles: false
 };
 
 var MorphicPreferences = standardSettings;
@@ -2762,6 +2762,60 @@ Rectangle.prototype.amountToTranslateWithin = function (aRect) {
     return new Point(dx, dy);
 };
 
+Rectangle.prototype.regionsAround = function (aRect) {
+    // answer a list of rectangles surrounding another one,
+    // use this to clip "holes"
+    var regions = [];
+    if (!this.intersects(aRect)) {
+        return regions;
+    }
+    // left
+    if (aRect.left() > this.left()) {
+        regions.push(
+            new Rectangle(
+                this.left(),
+                this.top(),
+                aRect.left(),
+                this.bottom()
+            )
+        );
+    }
+    // above:
+    if (aRect.top() > this.top()) {
+        regions.push(
+            new Rectangle(
+                this.left(),
+                this.top(),
+                this.right(),
+                aRect.top()
+            )
+        );
+    }
+    // right:
+    if (aRect.right() < this.right()) {
+        regions.push(
+            new Rectangle(
+                aRect.right(),
+                this.top(),
+                this.right(),
+                this.bottom()
+            )
+        );
+    }
+    // below:
+    if (aRect.bottom() < this.bottom()) {
+        regions.push(
+            new Rectangle(
+                this.left(),
+                aRect.bottom(),
+                this.right(),
+                this.bottom()
+            )
+        );
+    }
+    return regions;
+};
+
 // Rectangle testing:
 
 Rectangle.prototype.containsPoint = function (aPoint) {
@@ -2798,10 +2852,10 @@ Rectangle.prototype.scaleBy = function (scale) {
     return new Rectangle(o.x, o.y, c.x, c.y);
 };
 
-Rectangle.prototype.translateBy = function (factor) {
-    // factor can be either a Point or a scalar
-    var o = this.origin.add(factor),
-        c = this.corner.add(factor);
+Rectangle.prototype.translateBy = function (delta) {
+    // delta can be either a Point or a number
+    var o = this.origin.add(delta),
+        c = this.corner.add(delta);
     return new Rectangle(o.x, o.y, c.x, c.y);
 };
 
@@ -2972,30 +3026,6 @@ Morph.uber = Node.prototype;
 
 // Morph settings:
 
-/*
-    damage list housekeeping
-
-    the trackChanges property of the Morph prototype is a Boolean switch
-    that determines whether the World's damage list ('broken' rectangles)
-    tracks changes. By default the switch is always on. If set to false
-    changes are not stored. This can be very useful for housekeeping of
-    the damage list in situations where a large number of (sub-) morphs
-    are changed more or less at once. Instead of keeping track of every
-    single submorph's changes tremendous performance improvements can be
-    achieved by setting the trackChanges flag to false before propagating
-    the layout changes, setting it to true again and then storing the full
-    bounds of the surrounding morph. As an example refer to the
-
-        fixLayout()
-
-    method of InspectorMorph, or the
-
-        startLayout()
-        endLayout()
-
-    methods of SyntaxElementMorph in the Snap application.
-*/
-
 Morph.prototype.shadowBlur = 4;
 
 // Morph instance creation:
@@ -3013,6 +3043,7 @@ Morph.prototype.init = function () {
     this.isCachingImage = false;
     this.shouldRerender = false;
     this.bounds = new Rectangle(0, 0, 50, 40);
+    this.holes = []; // list of "untouchable" regions (rectangles)
     this.color = new Color(80, 80, 80);
     this.texture = null; // optional url of a fill-image
     this.cachedTexture = null; // internal cache of actual bg image
@@ -3448,6 +3479,20 @@ Morph.prototype.drawOn = function (aContext, aRect) {
     } else { // render directly on target canvas
         aContext.translate(pos.x, pos.y);
         this.render(aContext);
+        if (MorphicPreferences.showHoles) { // debug hole rendering
+            aContext.translate(-pos.x, -pos.y);
+            aContext.globalAlpha = 0.5;
+            aContext.fillStyle = 'white';
+            this.holes.forEach(hole => {
+                var sect = hole.translateBy(pos).intersect(this.bounds);
+                aContext.fillRect(
+                    sect.left(),
+                    sect.top(),
+                    sect.width(),
+                    sect.height()
+                );
+            });
+        }
     }
     aContext.restore();
 };
@@ -3693,6 +3738,11 @@ Morph.prototype.topMorphAt = function (point) {
         if (result) {return result; }
     }
     if (this.bounds.containsPoint(point)) {
+        if (this.holes.some(
+                any => any.translateBy(this.position()).containsPoint(point))
+        ) {
+            return null;
+        }
         if (this.isFreeForm) {
             if (!this.isTransparentAt(point)) {
                 return this;
@@ -11969,10 +12019,12 @@ WorldMorph.prototype.updateBroken = function () {
     this.condenseDamages();
     this.broken.forEach(rect => {
         if (rect.extent().gt(ZERO)) {
+            // /* // already clipped in FrameMorph
             ctx.save();
             ctx.beginPath();
             ctx.rect(rect.left(), rect.top(), rect.width(), rect.height());
             ctx.clip();
+            // */
             this.fullDrawOn(ctx, rect);
             ctx.restore();
         }
@@ -12480,6 +12532,19 @@ WorldMorph.prototype.contextMenu = function () {
                 'smaller menu fonts\nand sliders'
             );
         }
+        if (MorphicPreferences.showHoles) {
+            menu.addItem(
+                'hide holes',
+                'toggleHolesDisplay',
+                'debug untouchable regions'
+            );
+        } else {
+            menu.addItem(
+                'show holes',
+                'toggleHolesDisplay',
+                'debug untouchable regions'
+            );
+        }
         menu.addLine();
     }
     if (this.isDevMode) {
@@ -12804,4 +12869,9 @@ WorldMorph.prototype.togglePreferences = function () {
     } else {
         MorphicPreferences = standardSettings;
     }
+};
+
+WorldMorph.prototype.toggleHolesDisplay = function () {
+    MorphicPreferences.showHoles = !MorphicPreferences.showHoles;
+    this.rerender();
 };
