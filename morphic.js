@@ -1646,8 +1646,10 @@ function enableRetinaSupport() {
                     context;
                 uber.width.set.call(this, width * pixelRatio);
                 context = this.getContext('2d');
+                /*
                 context.restore();
                 context.save();
+                */
                 context.scale(pixelRatio, pixelRatio);
             } catch (err) {
                 console.log('Retina Display Support Problem', err);
@@ -1665,8 +1667,10 @@ function enableRetinaSupport() {
                 context;
             uber.height.set.call(this, height * pixelRatio);
             context = this.getContext('2d');
+            /*
             context.restore();
             context.save();
+            */
             context.scale(pixelRatio, pixelRatio);
         }
     });
@@ -7190,7 +7194,7 @@ SliderButtonMorph.prototype.renderEdges = function (ctx) {
             ctx.fill();
         }
     }
-     ctx.restore();
+    ctx.restore();
 };
 
 //SliderButtonMorph events:
