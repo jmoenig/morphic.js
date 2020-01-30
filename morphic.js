@@ -3420,6 +3420,7 @@ Morph.prototype.renderTexture = function (url, ctx) {
         ctx.translate(pos.x, pos.y);
         this.renderCachedTexture(ctx);
         ctx.restore();
+        this.changed();
     };
     this.cachedTexture.src = this.texture = url; // make absolute
 };
@@ -3441,7 +3442,6 @@ Morph.prototype.renderCachedTexture = function (ctx) {
         }
     }
     ctx.restore();
-    this.changed();
 };
 
 Morph.prototype.drawOn = function (aContext, aRect) {
