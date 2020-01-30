@@ -12014,12 +12014,10 @@ WorldMorph.prototype.updateBroken = function () {
     this.condenseDamages();
     this.broken.forEach(rect => {
         if (rect.extent().gt(ZERO)) {
-            // /* // already clipped in FrameMorph
             ctx.save();
             ctx.beginPath();
             ctx.rect(rect.left(), rect.top(), rect.width(), rect.height());
             ctx.clip();
-            // */
             this.fullDrawOn(ctx, rect);
             ctx.restore();
         }
