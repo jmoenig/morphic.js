@@ -1170,7 +1170,7 @@
 
 /*global window, HTMLCanvasElement, FileReader, Audio, FileList, Map*/
 
-var morphicVersion = '2020-January-29';
+var morphicVersion = '2020-February-02';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -4213,6 +4213,28 @@ Morph.prototype.inspect = function (anotherObject) {
     inspector.changed();
 };
 
+Morph.prototype.inspectKeyEvent = function (event) {
+    this.inform(
+        'Key pressed: ' +
+            String.fromCharCode(event.charCode) +
+            '\n------------------------' +
+            '\ncharCode: ' +
+            event.charCode.toString() +
+            '\nkeyCode: ' +
+            event.keyCode.toString() +
+            '\nkey: ' +
+            event.key.toString() +
+            '\nshiftKey: ' +
+            event.shiftKey.toString() +
+            '\naltKey: ' +
+            event.altKey.toString() +
+            '\nctrlKey: ' +
+            event.ctrlKey.toString() +
+            '\ncmdKey: ' +
+            event.metaKey.toString()
+    );
+};
+
 // Morph menus:
 
 Morph.prototype.contextMenu = function () {
@@ -6034,31 +6056,6 @@ CursorMorph.prototype.destroy = function () {
 CursorMorph.prototype.destroyTextarea = function () {
     document.body.removeChild(this.textarea);
     this.textarea = null;
-};
-
-// CursorMorph utilities:
-
-CursorMorph.prototype.inspectKeyEvent = function (event) {
-    // private
-    this.inform(
-        'Key pressed: ' +
-            String.fromCharCode(event.charCode) +
-            '\n------------------------' +
-            '\ncharCode: ' +
-            event.charCode.toString() +
-            '\nkeyCode: ' +
-            event.keyCode.toString() +
-            '\nkey: ' +
-            event.key.toString() +
-            '\nshiftKey: ' +
-            event.shiftKey.toString() +
-            '\naltKey: ' +
-            event.altKey.toString() +
-            '\nctrlKey: ' +
-            event.ctrlKey.toString() +
-            '\ncmdKey: ' +
-            event.metaKey.toString()
-    );
 };
 
 // BoxMorph ////////////////////////////////////////////////////////////
@@ -11996,6 +11993,7 @@ WorldMorph.prototype.init = function (aCanvas, fillPage) {
     this.broken = [];
     this.animations = [];
     this.hand = new HandMorph(this);
+    this.keyboardHandler = window; // +++
     this.keyboardReceiver = null;
     this.cursor = null;
     this.lastEditedText = null;
@@ -12208,7 +12206,9 @@ WorldMorph.prototype.initVirtualKeyboard = function () {
 };
 
 WorldMorph.prototype.initEventListeners = function () {
-    var canvas = this.worldCanvas, myself = this;
+    var canvas = this.worldCanvas,
+        myself = this,
+        handler = this.keyboardHandler;
 
     if (myself.useFillPage) {
         myself.fillPage();
@@ -12220,7 +12220,8 @@ WorldMorph.prototype.initEventListeners = function () {
         "mousedown",
         function (event) {
             event.preventDefault();
-            // +++ canvas.focus();
+            // canvas.focus(); // +++
+            myself.keyboardHandler.focus(); // +++
             myself.hand.processMouseDown(event);
         },
         false
@@ -12285,10 +12286,11 @@ WorldMorph.prototype.initEventListeners = function () {
         false
     );
 
-    canvas.addEventListener(
+    handler.addEventListener(
         "keydown",
         function (event) {
             // remember the keyCode in the world's currentKey property
+            // myself.inspectKeyEvent(event);
             myself.currentKey = event.keyCode;
             if (myself.keyboardReceiver) {
                 myself.keyboardReceiver.processKeyDown(event);
@@ -12313,10 +12315,11 @@ WorldMorph.prototype.initEventListeners = function () {
         false
     );
 
-    canvas.addEventListener(
+    handler.addEventListener(
         "keyup",
         function (event) {
             // flush the world's currentKey property
+            // myself.inspectKeyEvent(event);
             myself.currentKey = null;
             // dispatch to keyboard receiver
             if (myself.keyboardReceiver) {
@@ -12329,9 +12332,10 @@ WorldMorph.prototype.initEventListeners = function () {
         false
     );
 
-    canvas.addEventListener(
+    handler.addEventListener(
         "keypress",
         function (event) {
+            // myself.inspectKeyEvent(event);
             if (myself.keyboardReceiver) {
                 myself.keyboardReceiver.processKeyPress(event);
             }
@@ -12853,7 +12857,8 @@ WorldMorph.prototype.stopEditing = function () {
         this.virtualKeyboard = null;
     }
     this.lastEditedText = null;
-    // +++ this.worldCanvas.focus();
+    // this.worldCanvas.focus(); // +++
+    this.keyboardHandler.focus(); // +++
 };
 
 WorldMorph.prototype.toggleBlurredShadows = function () {
