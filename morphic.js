@@ -1170,7 +1170,7 @@
 
 /*global window, HTMLCanvasElement, FileReader, Audio, FileList, Map*/
 
-var morphicVersion = '2020-February-02';
+var morphicVersion = '2020-February-03';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -11993,7 +11993,7 @@ WorldMorph.prototype.init = function (aCanvas, fillPage) {
     this.broken = [];
     this.animations = [];
     this.hand = new HandMorph(this);
-    this.keyboardHandler = window; // +++
+    this.keyboardHandler = null; // aCanvas; // +++
     this.keyboardReceiver = null;
     this.cursor = null;
     this.lastEditedText = null;
@@ -12001,6 +12001,7 @@ WorldMorph.prototype.init = function (aCanvas, fillPage) {
     this.activeHandle = null;
     this.virtualKeyboard = null;
 
+    this.initKeyboardHandler();
     this.initEventListeners();
 };
 
@@ -12127,6 +12128,27 @@ WorldMorph.prototype.getGlobalPixelColor = function (point) {
 };
 
 // WorldMorph events:
+
+WorldMorph.prototype.initKeyboardHandler = function () {
+    if (this.keyboardHandler) {
+        document.body.removeChild(this.keyboardHandler);
+        this.keyboardHandler = null;
+    }
+    this.keyboardHandler = document.createElement("input");
+    this.keyboardHandler.type = "text";
+    this.keyboardHandler.style.color = "transparent";
+    this.keyboardHandler.style.backgroundColor = "transparent";
+    this.keyboardHandler.style.border = "none";
+    this.keyboardHandler.style.outline = "none";
+    this.keyboardHandler.style.position = "absolute";
+    this.keyboardHandler.style.top = "0px";
+    this.keyboardHandler.style.left = "0px";
+    this.keyboardHandler.style.width = "0px";
+    this.keyboardHandler.style.height = "0px";
+    this.keyboardHandler.autocapitalize = "none"; // iOS specific
+
+    document.body.appendChild(this.keyboardHandler);
+};
 
 WorldMorph.prototype.initVirtualKeyboard = function () {
     var myself = this;
