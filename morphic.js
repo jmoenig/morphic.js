@@ -12738,8 +12738,8 @@ WorldMorph.prototype.slide = function (aStringOrTextMorph) {
     slider.button.pressColor = slider.button.color.copy();
     slider.button.pressColor.b += 150;
     slider.setExtent(new Point(
-        MorphicPreferences.scrollBarSize,
-        MorphicPreferences.menuFontSize * 10
+        MorphicPreferences.scrollBarSize * 10,
+        MorphicPreferences.menuFontSize
     ));
     slider.action = function (num) {
         aStringOrTextMorph.changed();
