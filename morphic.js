@@ -63,6 +63,7 @@
      Morphs have a list of rectangles representing "untouchable" areas
      
      * virtualKeyboard property and Morphic preference has been deprecated
+     * fullImageClassic() => is always just fullImage()
 
 
     documentation contents
@@ -3519,35 +3520,12 @@ Morph.prototype.toggleVisibility = function () {
 
 // Morph full image:
 
-Morph.prototype.fullImageClassic = function () { // +++ work on this some more
-    // use the cache since fullDrawOn() will
+Morph.prototype.fullImage = function () {
     var fb = this.fullBounds(),
         img = newCanvas(fb.extent()),
         ctx = img.getContext('2d');
     ctx.translate(-fb.origin.x, -fb.origin.y);
     this.fullDrawOn(ctx, fb);
-    img.globalAlpha = this.alpha;
-    return img;
-};
-
-Morph.prototype.fullImage = function () {
-    var img, eachImg, ctx, fb;
-    img = newCanvas(this.fullBounds().extent());
-    ctx = img.getContext('2d');
-    fb = this.fullBounds();
-    this.allChildren().forEach(morph => {
-        if (morph.isVisible) {
-            ctx.globalAlpha = morph.alpha;
-            eachImg = morph.getImage();
-            if (eachImg.width && eachImg.height) {
-                ctx.drawImage(
-                    eachImg,
-                    morph.bounds.origin.x - fb.origin.x,
-                    morph.bounds.origin.y - fb.origin.y
-                );
-            }
-        }
-    });
     return img;
 };
 
@@ -4346,7 +4324,7 @@ Morph.prototype.developersMenu = function () {
     menu.addItem(
         "pic...",
         function () {
-            window.open(this.fullImageClassic().toDataURL());
+            window.open(this.fullImage().toDataURL());
         },
         'open a new window\nwith a picture of this morph'
     );
@@ -12407,7 +12385,7 @@ WorldMorph.prototype.contextMenu = function () {
         menu.addItem(
             "screenshot...",
             function () {
-                window.open(this.fullImageClassic().toDataURL());
+                window.open(this.fullImage().toDataURL());
             },
             'open a new window\nwith a picture of this morph'
         );
