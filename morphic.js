@@ -5492,9 +5492,10 @@ CursorMorph.prototype.initializeTextarea = function () {
     this.textarea.wrap = "off";
     this.textarea.style.overflow = "hidden";
     this.textarea.style.fontSize = this.target.fontSize + 'px';
-    this.textarea.autofocus = true;
+    // this.textarea.autofocus = true; // commented out b/c of issues
     this.textarea.value = this.target.text;
     document.body.appendChild(this.textarea);
+    this.textarea.focus();
     this.updateTextAreaPosition();
     this.syncTextareaSelectionWith(this.target);
 
@@ -5620,7 +5621,7 @@ CursorMorph.prototype.initializeTextarea = function () {
         }
         target.changed();
         target.fixLayout();
-        target.changed();
+        target.rerender();
 
         // cursor morph: copy the caret position to cursor morph.
         myself.gotoSlot(textarea.selectionStart);
@@ -12215,7 +12216,7 @@ WorldMorph.prototype.initEventListeners = function () {
     canvas.addEventListener(
         "mousedown",
         function (event) {
-            event.preventDefault();
+            // event.preventDefault(); // commented out b/c of issues in Safari
             myself.keyboardHandler.focus();
             myself.hand.processMouseDown(event);
         },
@@ -12766,7 +12767,7 @@ WorldMorph.prototype.stopEditing = function () {
     }
     this.keyboardReceiver = null;
     this.lastEditedText = null;
-    this.keyboardHandler.focus(); // +++
+    this.keyboardHandler.focus();
 };
 
 WorldMorph.prototype.toggleBlurredShadows = function () {
