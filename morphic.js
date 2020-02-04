@@ -61,6 +61,8 @@
 
      holes:
      Morphs have a list of rectangles representing "untouchable" areas
+     
+     * virtualKeyboard property and Morphic preference has been deprecated
 
 
     documentation contents
@@ -1170,7 +1172,7 @@
 
 /*global window, HTMLCanvasElement, FileReader, Audio, FileList, Map*/
 
-var morphicVersion = '2020-February-03';
+var morphicVersion = '2020-February-04';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -1190,7 +1192,6 @@ var standardSettings = {
     scrollBarSize: 12,
     mouseScrollAmount: 40,
     useSliderForInput: false,
-    useVirtualKeyboard: true,
     isTouchDevice: false, // turned on by touch events, don't set
     rasterizeSVGs: false,
     isFlat: false,
@@ -1211,7 +1212,6 @@ var touchScreenSettings = {
     scrollBarSize: 24,
     mouseScrollAmount: 40,
     useSliderForInput: true,
-    useVirtualKeyboard: true,
     isTouchDevice: false,
     rasterizeSVGs: false,
     isFlat: false,
@@ -11993,13 +11993,12 @@ WorldMorph.prototype.init = function (aCanvas, fillPage) {
     this.broken = [];
     this.animations = [];
     this.hand = new HandMorph(this);
-    this.keyboardHandler = null; // aCanvas; // +++
+    this.keyboardHandler = null;
     this.keyboardReceiver = null;
     this.cursor = null;
     this.lastEditedText = null;
     this.activeMenu = null;
     this.activeHandle = null;
-    this.virtualKeyboard = null;
 
     this.initKeyboardHandler();
     this.initEventListeners();
@@ -12130,6 +12129,7 @@ WorldMorph.prototype.getGlobalPixelColor = function (point) {
 // WorldMorph events:
 
 WorldMorph.prototype.initKeyboardHandler = function () {
+    var myself = this; // +++ refactor
     if (this.keyboardHandler) {
         document.body.removeChild(this.keyboardHandler);
         this.keyboardHandler = null;
@@ -12146,36 +12146,10 @@ WorldMorph.prototype.initKeyboardHandler = function () {
     this.keyboardHandler.style.width = "0px";
     this.keyboardHandler.style.height = "0px";
     this.keyboardHandler.autocapitalize = "none"; // iOS specific
-
     document.body.appendChild(this.keyboardHandler);
-};
 
-WorldMorph.prototype.initVirtualKeyboard = function () {
-    var myself = this;
 
-    if (this.virtualKeyboard) {
-        document.body.removeChild(this.virtualKeyboard);
-        this.virtualKeyboard = null;
-    }
-    if (!MorphicPreferences.isTouchDevice
-            || !MorphicPreferences.useVirtualKeyboard) {
-        return;
-    }
-    this.virtualKeyboard = document.createElement("input");
-    this.virtualKeyboard.type = "text";
-    this.virtualKeyboard.style.color = "transparent";
-    this.virtualKeyboard.style.backgroundColor = "transparent";
-    this.virtualKeyboard.style.border = "none";
-    this.virtualKeyboard.style.outline = "none";
-    this.virtualKeyboard.style.position = "absolute";
-    this.virtualKeyboard.style.top = "0px";
-    this.virtualKeyboard.style.left = "0px";
-    this.virtualKeyboard.style.width = "0px";
-    this.virtualKeyboard.style.height = "0px";
-    this.virtualKeyboard.autocapitalize = "none"; // iOS specific
-    document.body.appendChild(this.virtualKeyboard);
-
-    this.virtualKeyboard.addEventListener(
+    this.keyboardHandler.addEventListener(
         "keydown",
         function (event) {
             // remember the keyCode in the world's currentKey property
@@ -12199,7 +12173,7 @@ WorldMorph.prototype.initVirtualKeyboard = function () {
         false
     );
 
-    this.virtualKeyboard.addEventListener(
+    this.keyboardHandler.addEventListener(
         "keyup",
         function (event) {
             // flush the world's currentKey property
@@ -12215,7 +12189,7 @@ WorldMorph.prototype.initVirtualKeyboard = function () {
         false
     );
 
-    this.virtualKeyboard.addEventListener(
+    this.keyboardHandler.addEventListener(
         "keypress",
         function (event) {
             if (myself.keyboardReceiver) {
@@ -12225,12 +12199,12 @@ WorldMorph.prototype.initVirtualKeyboard = function () {
         },
         false
     );
+
 };
 
 WorldMorph.prototype.initEventListeners = function () {
     var canvas = this.worldCanvas,
-        myself = this,
-        handler = this.keyboardHandler;
+        myself = this;
 
     if (myself.useFillPage) {
         myself.fillPage();
@@ -12242,8 +12216,7 @@ WorldMorph.prototype.initEventListeners = function () {
         "mousedown",
         function (event) {
             event.preventDefault();
-            // canvas.focus(); // +++
-            myself.keyboardHandler.focus(); // +++
+            myself.keyboardHandler.focus();
             myself.hand.processMouseDown(event);
         },
         false
@@ -12308,64 +12281,6 @@ WorldMorph.prototype.initEventListeners = function () {
         false
     );
 
-    handler.addEventListener(
-        "keydown",
-        function (event) {
-            // remember the keyCode in the world's currentKey property
-            // myself.inspectKeyEvent(event);
-            myself.currentKey = event.keyCode;
-            if (myself.keyboardReceiver) {
-                myself.keyboardReceiver.processKeyDown(event);
-            }
-            // supress backspace override
-            if (event.keyCode === 8) {
-                event.preventDefault();
-            }
-            // supress tab override and make sure tab gets
-            // received by all browsers
-            if (event.keyCode === 9) {
-                if (myself.keyboardReceiver) {
-                    myself.keyboardReceiver.processKeyPress(event);
-                }
-                event.preventDefault();
-            }
-            if ((event.ctrlKey && (!event.altKey) || event.metaKey) &&
-                    (event.keyCode !== 86)) { // allow pasting-in
-                event.preventDefault();
-            }
-        },
-        false
-    );
-
-    handler.addEventListener(
-        "keyup",
-        function (event) {
-            // flush the world's currentKey property
-            // myself.inspectKeyEvent(event);
-            myself.currentKey = null;
-            // dispatch to keyboard receiver
-            if (myself.keyboardReceiver) {
-                if (myself.keyboardReceiver.processKeyUp) {
-                    myself.keyboardReceiver.processKeyUp(event);
-                }
-            }
-            event.preventDefault();
-        },
-        false
-    );
-
-    handler.addEventListener(
-        "keypress",
-        function (event) {
-            // myself.inspectKeyEvent(event);
-            if (myself.keyboardReceiver) {
-                myself.keyboardReceiver.processKeyPress(event);
-            }
-            event.preventDefault();
-        },
-        false
-    );
-
     canvas.addEventListener( // Safari, Chrome
         "mousewheel",
         function (event) {
@@ -12379,17 +12294,6 @@ WorldMorph.prototype.initEventListeners = function () {
         function (event) {
             myself.hand.processMouseScroll(event);
             event.preventDefault();
-        },
-        false
-    );
-
-    document.body.addEventListener(
-        "paste",
-        function (event) {
-            var txt = event.clipboardData.getData("Text");
-            if (txt && myself.cursor) {
-                myself.cursor.insert(txt);
-            }
         },
         false
     );
@@ -12787,9 +12691,6 @@ WorldMorph.prototype.edit = function (aStringOrTextMorph) {
     if (!isNil(this.lastEditedText)) {
         this.stopEditing();
     }
-
-    var pos = getDocumentPositionOf(this.worldCanvas);
-
     if (!aStringOrTextMorph.isEditable) {
         return null;
     }
@@ -12799,14 +12700,6 @@ WorldMorph.prototype.edit = function (aStringOrTextMorph) {
     this.cursor = new CursorMorph(aStringOrTextMorph);
     aStringOrTextMorph.parent.add(this.cursor);
     this.keyboardReceiver = this.cursor;
-
-    this.initVirtualKeyboard();
-    if (MorphicPreferences.isTouchDevice
-            && MorphicPreferences.useVirtualKeyboard) {
-        this.virtualKeyboard.style.top = this.cursor.top() + pos.y + "px";
-        this.virtualKeyboard.style.left = this.cursor.left() + pos.x + "px";
-        this.virtualKeyboard.focus();
-    }
 
     if (MorphicPreferences.useSliderForInput) {
         if (!aStringOrTextMorph.parentThatIsA(MenuMorph)) {
@@ -12851,8 +12744,7 @@ WorldMorph.prototype.slide = function (aStringOrTextMorph) {
     slider.action = function (num) {
         aStringOrTextMorph.changed();
         aStringOrTextMorph.text = Math.round(num).toString();
-        aStringOrTextMorph.drawNew();
-        aStringOrTextMorph.changed();
+        aStringOrTextMorph.rerender();
         aStringOrTextMorph.escalateEvent(
             'reactToSliderEdit',
             aStringOrTextMorph
@@ -12873,13 +12765,7 @@ WorldMorph.prototype.stopEditing = function () {
     	this.keyboardReceiver.stopEditing();
     }
     this.keyboardReceiver = null;
-    if (this.virtualKeyboard) {
-        this.virtualKeyboard.blur();
-        document.body.removeChild(this.virtualKeyboard);
-        this.virtualKeyboard = null;
-    }
     this.lastEditedText = null;
-    // this.worldCanvas.focus(); // +++
     this.keyboardHandler.focus(); // +++
 };
 

@@ -68,7 +68,8 @@
 
                 hi = new StringMorph(
                     'Hello, World!', 48, 'serif');
-                hi.isDraggable = true;
+                // hi.isDraggable = true;
+                hi.enableSelecting(); // +++
                 hi.isEditable = true;
                 hi.setPosition(new Point(275, 200));
                 world.add(hi);
@@ -105,7 +106,8 @@
                         "Singen, die Loreley getan."
                 );
                 tm.isEditable = true;
-                tm.isDraggable = true;
+                // tm.isDraggable = true;
+                tm.enableSelecting(); // +++
                 tm.maxWidth = 300;
                 // mo.backgroundColor = new Color(255, 255, 180);
                 // tm.alignment = 'right';
