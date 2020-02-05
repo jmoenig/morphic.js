@@ -10429,6 +10429,7 @@ FrameMorph.prototype.fullDrawOn = function (ctx, aRect) {
     var shadow, clipped;
     if (!this.isVisible) {return; }
     clipped = this.bounds.intersect(aRect);
+    if (!clipped.extent().gt(ZERO)) {return; }
     this.drawOn(ctx, clipped);
     this.children.forEach(child => {
         if (child instanceof ShadowMorph) {
