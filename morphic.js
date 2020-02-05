@@ -1173,7 +1173,7 @@
 
 /*global window, HTMLCanvasElement, FileReader, Audio, FileList, Map*/
 
-var morphicVersion = '2020-February-04';
+var morphicVersion = '2020-February-05';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -3418,16 +3418,8 @@ Morph.prototype.fixLayout = function () {
 
 Morph.prototype.renderTexture = function (url, ctx) {
     this.cachedTexture = new Image();
-    this.cachedTexture.onload = () => {
-        var pos = this.position();
-        ctx.save();
-        ctx.globalAlpha = this.alpha;
-        ctx.translate(pos.x, pos.y);
-        this.renderCachedTexture(ctx);
-        ctx.restore();
-        this.changed();
-    };
-    this.cachedTexture.src = this.texture = url; // make absolute
+    this.cachedTexture.onload = () => this.changed();
+    this.cachedTexture.src = this.texture = url;
 };
 
 Morph.prototype.renderCachedTexture = function (ctx) {
@@ -3438,6 +3430,7 @@ Morph.prototype.renderCachedTexture = function (ctx) {
         y;
 
     ctx.save();
+    ctx.globalAlpha = this.alpha;
     ctx.beginPath();
     ctx.rect(0, 0, this.width(), this.height());
     ctx.clip();
@@ -3449,43 +3442,46 @@ Morph.prototype.renderCachedTexture = function (ctx) {
     ctx.restore();
 };
 
-Morph.prototype.drawOn = function (aContext, aRect) {
-    var area = aRect.intersect(this.bounds),
+Morph.prototype.drawOn = function (ctx, rect) {
+    var clipped = rect.intersect(this.bounds),
         pos = this.position(),
         pic, src, w, h, sl, st;
 
-    if (!area.extent().gt(ZERO)) {return; }
-    aContext.save();
-    aContext.globalAlpha = this.alpha;
+    if (!clipped.extent().gt(ZERO)) {return; }
+    ctx.save();
+    ctx.globalAlpha = this.alpha;
     if (this.isCachingImage) {
         pic = this.getImage();
-        src = area.translateBy(pos.neg());
+        src = clipped.translateBy(pos.neg());
         sl = src.left();
         st = src.top();
         w = Math.min(src.width(), pic.width - sl);
         h = Math.min(src.height(), pic.height - st);
         if (w < 1 || h < 1) {return; }
-        aContext.drawImage(
+        ctx.drawImage(
             pic,
             sl,
             st,
             w,
             h,
-            area.left(),
-            area.top(),
+            clipped.left(),
+            clipped.top(),
             w,
             h
         );
     } else { // render directly on target canvas
-        aContext.translate(pos.x, pos.y);
-        this.render(aContext);
+        ctx.beginPath();
+        ctx.rect(clipped.left(), clipped.top(), clipped.width(), clipped.height());
+        ctx.clip();
+        ctx.translate(pos.x, pos.y);
+        this.render(ctx);
         if (MorphicPreferences.showHoles) { // debug hole rendering
-            aContext.translate(-pos.x, -pos.y);
-            aContext.globalAlpha = 0.5;
-            aContext.fillStyle = 'white';
+            ctx.translate(-pos.x, -pos.y);
+            ctx.globalAlpha = 0.5;
+            ctx.fillStyle = 'white';
             this.holes.forEach(hole => {
-                var sect = hole.translateBy(pos).intersect(this.bounds);
-                aContext.fillRect(
+                var sect = hole.translateBy(pos).intersect(clipped);
+                ctx.fillRect(
                     sect.left(),
                     sect.top(),
                     sect.width(),
@@ -3494,7 +3490,7 @@ Morph.prototype.drawOn = function (aContext, aRect) {
             });
         }
     }
-    aContext.restore();
+    ctx.restore();
 };
 
 Morph.prototype.fullDrawOn = function (aContext, aRect) {
@@ -4730,11 +4726,6 @@ HandleMorph.prototype.renderHandleOn = function (
         p2 = new Point(this.width(), 0), // top right
         p11, p22, i;
 
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(0, 0, this.width(), this.height());
-    ctx.clip();
-
     ctx.lineWidth = 1;
     ctx.lineCap = 'round';
     ctx.strokeStyle = color.toString();
@@ -4795,8 +4786,6 @@ HandleMorph.prototype.renderHandleOn = function (
         ctx.closePath();
         ctx.stroke();
     }
-
-    ctx.restore();
 };
 
 // HandleMorph stepping:
@@ -7046,8 +7035,6 @@ SliderButtonMorph.prototype.renderEdges = function (ctx) {
         w = this.width(),
         h = this.height();
 
-    ctx.save();
-
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
 
@@ -7170,7 +7157,6 @@ SliderButtonMorph.prototype.renderEdges = function (ctx) {
             ctx.fill();
         }
     }
-    ctx.restore();
 };
 
 //SliderButtonMorph events:
@@ -9512,11 +9498,6 @@ TextMorph.prototype.render = function (ctx) {
         shadowHeight = Math.abs(this.shadowOffset.y),
         i, line, width, offx, offy, x, y, start, stop, p, c;
 
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(0, 0, this.width(), this.height());
-    ctx.clip();
-
     // prepare context for drawing text
     ctx.font = this.font();
     ctx.textAlign = 'left';
@@ -9581,8 +9562,6 @@ TextMorph.prototype.render = function (ctx) {
         ctx.fillStyle = this.markedTextColor.toString();
         ctx.fillText(c, p.x, p.y + fontHeight(this.fontSize));
     }
-
-    ctx.restore();
 };
 
 TextMorph.prototype.setExtent = function (aPoint) {
@@ -10450,10 +10429,6 @@ FrameMorph.prototype.fullDrawOn = function (ctx, aRect) {
     var shadow, clipped;
     if (!this.isVisible) {return; }
     clipped = this.bounds.intersect(aRect);
-    ctx.save();
-    ctx.beginPath();
-    ctx.rect(clipped.left(), clipped.top(), clipped.width(), clipped.height());
-    ctx.clip();
     this.drawOn(ctx, clipped);
     this.children.forEach(child => {
         if (child instanceof ShadowMorph) {
@@ -10462,7 +10437,6 @@ FrameMorph.prototype.fullDrawOn = function (ctx, aRect) {
             child.fullDrawOn(ctx, clipped);
         }
     });
-    ctx.restore();
     if (shadow) {
         shadow.drawOn(ctx, aRect);
     }
@@ -11995,12 +11969,7 @@ WorldMorph.prototype.updateBroken = function () {
     this.condenseDamages();
     this.broken.forEach(rect => {
         if (rect.extent().gt(ZERO)) {
-            ctx.save();
-            ctx.beginPath();
-            ctx.rect(rect.left(), rect.top(), rect.width(), rect.height());
-            ctx.clip();
             this.fullDrawOn(ctx, rect);
-            ctx.restore();
         }
     });
     this.broken = [];
