@@ -12078,7 +12078,10 @@ WorldMorph.prototype.getGlobalPixelColor = function (point) {
 // WorldMorph events:
 
 WorldMorph.prototype.initKeyboardHandler = function () {
-    var myself = this; // +++ refactor
+    var myself = this;
+
+    // this.keyboardHandler = this.worldCanvas; // slow on Safari
+
     if (this.keyboardHandler) {
         document.body.removeChild(this.keyboardHandler);
         this.keyboardHandler = null;
@@ -12097,6 +12100,23 @@ WorldMorph.prototype.initKeyboardHandler = function () {
     this.keyboardHandler.autocapitalize = "none"; // iOS specific
     document.body.appendChild(this.keyboardHandler);
 
+    /* // for debugging
+    this.keyboardHandler.addEventListener(
+        "focus",
+        function (event) {
+            console.log('keyboard handler focused')
+        },
+        false
+    );
+
+    this.keyboardHandler.addEventListener(
+        "blur",
+        function (event) {
+            console.log('keyboard handler lost focus')
+        },
+        false
+    );
+    */
 
     this.keyboardHandler.addEventListener(
         "keydown",
@@ -12164,11 +12184,11 @@ WorldMorph.prototype.initEventListeners = function () {
     canvas.addEventListener(
         "mousedown",
         function (event) {
-            // event.preventDefault(); // commented out b/c of issues in Safari
+            event.preventDefault();
             myself.keyboardHandler.focus();
             myself.hand.processMouseDown(event);
         },
-        false
+        true // prevent Safari from overriding right-click
     );
 
     canvas.addEventListener(
@@ -12649,13 +12669,11 @@ WorldMorph.prototype.edit = function (aStringOrTextMorph) {
     this.cursor = new CursorMorph(aStringOrTextMorph);
     aStringOrTextMorph.parent.add(this.cursor);
     this.keyboardReceiver = this.cursor;
-
     if (MorphicPreferences.useSliderForInput) {
         if (!aStringOrTextMorph.parentThatIsA(MenuMorph)) {
             this.slide(aStringOrTextMorph);
         }
     }
-
     if (this.lastEditedText !== aStringOrTextMorph) {
         aStringOrTextMorph.escalateEvent('freshTextEdit', aStringOrTextMorph);
     }
