@@ -7356,8 +7356,8 @@ SliderMorph.prototype.setStart = function (num, noUpdate) {
     }
     this.value = Math.max(this.value, this.start);
     if (!noUpdate) {this.updateTarget(); }
-    this.drawNew();
-    this.changed();
+    this.fixLayout();
+    this.rerender();
 };
 
 SliderMorph.prototype.setStop = function (num, noUpdate) {
@@ -7373,8 +7373,8 @@ SliderMorph.prototype.setStop = function (num, noUpdate) {
     }
     this.value = Math.min(this.value, this.stop);
     if (!noUpdate) {this.updateTarget(); }
-    this.drawNew();
-    this.changed();
+    this.fixLayout();
+    this.rerender();
 };
 
 SliderMorph.prototype.setSize = function (num, noUpdate) {
@@ -7396,8 +7396,8 @@ SliderMorph.prototype.setSize = function (num, noUpdate) {
     }
     this.value = Math.min(this.value, this.stop - this.size);
     if (!noUpdate) {this.updateTarget(); }
-    this.drawNew();
-    this.changed();
+    this.fixLayout();
+    this.rerender();
 };
 
 SliderMorph.prototype.setTarget = function () {
