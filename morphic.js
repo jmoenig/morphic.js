@@ -9353,7 +9353,6 @@ TextMorph.prototype.init = function (
     // override inherited properites:
     this.color = new Color(0, 0, 0);
     this.fixLayout(); // determine my extent
-    // this.drawNew();
 };
 
 TextMorph.prototype.toString = function () {
@@ -12419,7 +12418,7 @@ WorldMorph.prototype.userCreateMorph = function () {
         );
         newMorph.isEditable = true;
         newMorph.maxWidth = 300;
-        newMorph.drawNew();
+        newMorph.fixLayout();
         create(newMorph);
     });
     menu.addItem('speech bubble', () => {
