@@ -11738,10 +11738,6 @@ WorldMorph.prototype.initKeyboardHandler = function () {
             if (this.keyboardFocus && this.keyboardFocus.processKeyDown) {
                 this.keyboardFocus.processKeyDown(event);
             }
-            // supress backspace override
-            if (event.keyCode === 8) {
-                event.preventDefault();
-            }
             // supress tab override and make sure tab gets
             // received by all browsers
             if (event.keyCode === 9) {
@@ -11751,7 +11747,7 @@ WorldMorph.prototype.initKeyboardHandler = function () {
                 event.preventDefault();
             }
         },
-        false
+        true
     );
 
     this.keyboardHandler.addEventListener(
