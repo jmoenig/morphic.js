@@ -5416,6 +5416,7 @@ CursorMorph.prototype.init = function (aStringOrTextMorph, aTextarea) {
         this.target.setAlignmentToLeft();
     }
     this.textarea.value = this.target.text;
+    this.textarea.style.fontSize = this.target.fontSize + 'px';
     this.gotoSlot(this.slot);
     this.updateTextAreaPosition();
     this.syncTextareaSelectionWith(this.target);
@@ -11726,13 +11727,8 @@ WorldMorph.prototype.initKeyboardHandler = function () {
     this.keyboardHandler.style.position = 'absolute';
     this.keyboardHandler.wrap = "off";
     this.keyboardHandler.style.overflow = "hidden";
-    // this.keyboardHandler.style.fontSize = this.target.fontSize + 'px';
     this.keyboardHandler.autofocus = true; // commented out b/c of issues
-    // this.keyboardHandler.value = this.target.text;
     document.body.appendChild(this.keyboardHandler);
-    // this.textarea.focus();
-    // this.updateTextAreaPosition();
-    // this.syncTextareaSelectionWith(this.target);
 
     this.keyboardHandler.addEventListener(
         "keydown",
@@ -11791,13 +11787,12 @@ WorldMorph.prototype.initKeyboardHandler = function () {
                 this.currentKey = null;
                 this.keyboardFocus.processInput(event);
             } else {
-                this.value = '';
+                this.keyboardHandler.value = '';
             }
             event.preventDefault();
         },
         false
     );
-
 };
 
 WorldMorph.prototype.initEventListeners = function () {
