@@ -64,6 +64,7 @@
      
      * virtualKeyboard property and Morphic preference has been deprecated
      * fullImageClassic() => is always just fullImage()
+     * keyboardReceiver => keyboardFocus
 
 
     documentation contents
@@ -1173,7 +1174,7 @@
 
 /*global window, HTMLCanvasElement, FileReader, Audio, FileList, Map*/
 
-var morphicVersion = '2020-February-06';
+var morphicVersion = '2020-February-07';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -5389,11 +5390,11 @@ CursorMorph.prototype.viewPadding = 1;
 
 // CursorMorph instance creation:
 
-function CursorMorph(aStringOrTextMorph) {
-    this.init(aStringOrTextMorph);
+function CursorMorph(aStringOrTextMorph, aTextarea) {
+    this.init(aStringOrTextMorph, aTextarea);
 }
 
-CursorMorph.prototype.init = function (aStringOrTextMorph) {
+CursorMorph.prototype.init = function (aStringOrTextMorph, aTextarea) {
     var ls;
 
     // additional properties:
@@ -5402,7 +5403,7 @@ CursorMorph.prototype.init = function (aStringOrTextMorph) {
     this.originalContents = this.target.text;
     this.originalAlignment = this.target.alignment;
     this.slot = this.target.text.length;
-    this.textarea = null;
+    this.textarea = aTextarea;
 
     CursorMorph.uber.init.call(this);
 
@@ -5414,197 +5415,178 @@ CursorMorph.prototype.init = function (aStringOrTextMorph) {
             (this.target.alignment !== 'left')) {
         this.target.setAlignmentToLeft();
     }
-    this.gotoSlot(this.slot);
-    this.initializeTextarea();
-};
-
-CursorMorph.prototype.initializeTextarea = function () {
-    this.textarea = document.createElement('textarea');
-    this.textarea.style.zIndex = -1;
-    this.textarea.style.position = 'absolute';
-    this.textarea.wrap = "off";
-    this.textarea.style.overflow = "hidden";
-    this.textarea.style.fontSize = this.target.fontSize + 'px';
-    // this.textarea.autofocus = true; // commented out b/c of issues
     this.textarea.value = this.target.text;
-    document.body.appendChild(this.textarea);
-    this.textarea.focus();
+    this.gotoSlot(this.slot);
     this.updateTextAreaPosition();
     this.syncTextareaSelectionWith(this.target);
+};
 
-    /*
-        There are three cases when the textarea gets inputs:
+// CursorMorph event handling
 
-        1. Inputs that represent special shortcuts of Snap!, so we
-        don't want the textarea to handle it. These events are captured in
-        "keydown" event handler.
+ /*
+     There are three cases when the textarea gets inputs:
 
-        2. inputs that change the content of the textarea, we need to update
-        the content of its target morph accordingly. This is handled in
-        the "input" event handler.
+     1. Inputs that represent special shortcuts of Snap!, so we
+     don't want the textarea to handle it. These events are captured in
+     "keydown" event handler.
 
-        3. input that change the textarea without triggering an "input" event,
-        e.g. selection change, cursor movements. These are handled in the
-        "keyup" event handler.
+     2. inputs that change the content of the textarea, we need to update
+     the content of its target morph accordingly. This is handled in
+     the "input" event handler.
 
-        Note that some changes in case 2 are not caused by keyboards (for
-        example, select a word by clicking in IME window), so there are overlaps
-        between case 2 and case 3. but no one can replace the other.
+     3. input that change the textarea without triggering an "input" event,
+     e.g. selection change, cursor movements. These are handled in the
+     "keyup" event handler.
+
+     Note that some changes in case 2 are not caused by keyboards (for
+     example, select a word by clicking in IME window), so there are overlaps
+     between case 2 and case 3. but no one can replace the other.
+ */
+
+CursorMorph.prototype.processKeyDown = function (event) {
+    /* Special shortcuts
+        - ctrl-d, ctrl-i and ctrl-p: doit, inspect it and print it
+        - tab: goto next text field
+        - esc: discard the editing
+        - enter / shift+enter: accept the editing
     */
-
-    this.textarea.addEventListener('keydown', event => {
-        /* Special shortcuts for Snap! system.
-            - ctrl-d, ctrl-i and ctrl-p: doit, inspect it and print it
-            - tab: goto next text field
-            - esc: discard the editing
-            - enter / shift+enter: accept the editing
-        */
-        var keyName = event.key,
-            shift = event.shiftKey,
-            singleLineText = this.target instanceof StringMorph,
-            dest;
-            
-
-        // other parts of the world need to know the current key
-        this.world().currentKey = event.keyCode;
-
-        if (!isNil(this.target.receiver) &&
-                    (event.ctrlKey || event.metaKey)) {
-            if (keyName === 'd') {
-                this.target.doIt();
-            } else if (keyName === 'i') {
-                this.target.inspectIt();
-            } else if (keyName === 'p') {
-                this.target.showIt();
-            }
-            event.preventDefault();
-        } else if (keyName === 'Tab' || keyName === 'U+0009') {
-            if (shift) {
-                this.target.backTab(this.target);
-            } else {
-                this.target.tab(this.target);
-            }
-            event.preventDefault();
-            this.target.escalateEvent('reactToEdit', this.target);
-        } else if (keyName === 'Escape') {
-            this.cancel();
-        } else if (keyName === "Enter" && (singleLineText || shift)) {
-            this.accept();
-        } else {
-
-            // catch "up arrow" and "down arrow" keys
-            if (keyName === 'ArrowDown') {
-                dest = this.target.downFrom(this.slot);
-                this.textarea.setSelectionRange(dest, dest);
-                // +++ to do: allow holding shift to select
-                event.preventDefault();
-            }
-            if (keyName === 'ArrowUp') {
-                dest = this.target.upFrom(this.slot);
-                this.textarea.setSelectionRange(dest, dest);
-                // +++ to do: allow holding shift to select
-                event.preventDefault();
-            }
-
-            this.target.escalateEvent('reactToKeystroke', event);
+    var keyName = event.key,
+        shift = event.shiftKey,
+        singleLineText = this.target instanceof StringMorph,
+        dest;
+ 
+    if (!isNil(this.target.receiver) && (event.ctrlKey || event.metaKey)) {
+        if (keyName === 'd') {
+            this.target.doIt();
+        } else if (keyName === 'i') {
+            this.target.inspectIt();
+        } else if (keyName === 'p') {
+            this.target.showIt();
         }
-    });
+        event.preventDefault();
+    } else if (keyName === 'Tab' || keyName === 'U+0009') {
+        // +++ to do: refactor to use a CASE statement here
+        if (shift) {
+            this.target.backTab(this.target);
+        } else {
+            this.target.tab(this.target);
+        }
+        event.preventDefault();
+        this.target.escalateEvent('reactToEdit', this.target);
+    } else if (keyName === 'Escape') {
+        this.cancel();
+    } else if (keyName === "Enter" && (singleLineText || shift)) {
+        this.accept();
+    } else {
+        // catch "up arrow" and "down arrow" keys
+        if (keyName === 'ArrowDown') {
+            dest = this.target.downFrom(this.slot);
+            this.textarea.setSelectionRange(dest, dest);
+            // +++ to do: allow holding shift to select
+            event.preventDefault();
+        }
+        if (keyName === 'ArrowUp') {
+            dest = this.target.upFrom(this.slot);
+            this.textarea.setSelectionRange(dest, dest);
+            // +++ to do: allow holding shift to select
+            event.preventDefault();
+        }
+        this.target.escalateEvent('reactToKeystroke', event);
+    }
+};
 
-    this.textarea.addEventListener('input', event => {
-        // handle content change.
-        var target = this.target,
-            textarea = this.textarea,
-            filteredContent,
-            caret;
+CursorMorph.prototype.processKeyUp = function (event) {
+    // handle selection change and cursor position change.
+    var textarea = this.textarea,
+        target = this.target;
 
-        this.world().currentKey = null;
+    if (textarea.selectionStart === textarea.selectionEnd) {
+        target.startMark = null;
+        target.endMark = null;
+    } else {
+        if (textarea.selectionDirection === 'backward') {
+            target.startMark = textarea.selectionEnd;
+            target.endMark = textarea.selectionStart;
+        } else {
+            target.startMark = textarea.selectionStart;
+            target.endMark = textarea.selectionEnd;
+        }
+    }
+    target.fixLayout();
+    target.rerender();
+    this.gotoSlot(textarea.selectionEnd);
+};
 
-        // filter invalid chars for numeric fields
-        function filterText (content) {
-            var points = 0,
-                result = '',
-                i, ch, valid;
-            for (i = 0; i < content.length; i += 1) {
-                ch = content.charAt(i);
-                valid = (
-                    ('0' <= ch && ch <= '9') || // digits
-                    (i === 0 && ch === '-')  || // leading '-'
-                    (ch === '.' && points === 0) // at most '.'
-                );
-                if (valid) {
-                    result += ch;
-                    if (ch === '.') {
-                        points += 1;
-                    }
+CursorMorph.prototype.processInput = function (event) {
+    // handle content change.
+    var target = this.target,
+        textarea = this.textarea,
+        filteredContent,
+        caret;
+
+    // filter invalid chars for numeric fields
+    function filterText (content) {
+        var points = 0,
+            result = '',
+            i, ch, valid;
+        for (i = 0; i < content.length; i += 1) {
+            ch = content.charAt(i);
+            valid = (
+                ('0' <= ch && ch <= '9') || // digits
+                (i === 0 && ch === '-')  || // leading '-'
+                (ch === '.' && points === 0) // at most '.'
+            );
+            if (valid) {
+                result += ch;
+                if (ch === '.') {
+                    points += 1;
                 }
             }
-            return result;
         }
+        return result;
+    }
 
-        if (target.isNumeric) {
-            filteredContent = filterText(textarea.value);
+    if (target.isNumeric) {
+        filteredContent = filterText(textarea.value);
+    } else {
+        filteredContent = textarea.value;
+    }
+
+    if (filteredContent.length < textarea.value.length) {
+        textarea.value = filteredContent;
+        caret = Math.min(textarea.selectionStart, filteredContent.length);
+        textarea.selectionEnd = caret;
+        textarea.selectionStart = caret;
+    }
+    // target morph: copy the content and selection status to the target.
+    target.text = filteredContent;
+
+    if (textarea.selectionStart === textarea.selectionEnd) {
+        target.startMark = null;
+        target.endMark = null;
+    } else {
+        if (textarea.selectionDirection === 'backward') {
+            target.startMark = textarea.selectionEnd;
+            target.endMark = textarea.selectionStart;
         } else {
-            filteredContent = textarea.value;
+            target.startMark = textarea.selectionStart;
+            target.endMark = textarea.selectionEnd;
         }
+    }
+    target.changed();
+    target.fixLayout();
+    target.rerender();
 
-        if (filteredContent.length < textarea.value.length) {
-            textarea.value = filteredContent;
-            caret = Math.min(textarea.selectionStart, filteredContent.length);
-            textarea.selectionEnd = caret;
-            textarea.selectionStart = caret;
-        }
-        // target morph: copy the content and selection status to the target.
-        target.text = filteredContent;
+    // cursor morph: copy the caret position to cursor morph.
+    this.gotoSlot(textarea.selectionStart);
 
-        if (textarea.selectionStart === textarea.selectionEnd) {
-            target.startMark = null;
-            target.endMark = null;
-        } else {
-            if (textarea.selectionDirection === 'backward') {
-                target.startMark = textarea.selectionEnd;
-                target.endMark = textarea.selectionStart;
-            } else {
-                target.startMark = textarea.selectionStart;
-                target.endMark = textarea.selectionEnd;
-            }
-        }
-        target.changed();
-        target.fixLayout();
-        target.rerender();
+    this.updateTextAreaPosition();
 
-        // cursor morph: copy the caret position to cursor morph.
-        this.gotoSlot(textarea.selectionStart);
-
-        this.updateTextAreaPosition();
-
-        // the "reactToInput" event gets triggered AFTER "reactToKeystroke"
-        this.target.escalateEvent('reactToInput', event);
-
-    });
-
-    this.textarea.addEventListener('keyup', event => {
-        // handle selection change and cursor position change.
-        var textarea = this.textarea,
-            target = this.target;
-
-        if (textarea.selectionStart === textarea.selectionEnd) {
-            target.startMark = null;
-            target.endMark = null;
-        } else {
-            if (textarea.selectionDirection === 'backward') {
-                target.startMark = textarea.selectionEnd;
-                target.endMark = textarea.selectionStart;
-            } else {
-                target.startMark = textarea.selectionStart;
-                target.endMark = textarea.selectionEnd;
-            }
-        }
-        target.changed();
-        target.fixLayout();
-        target.changed();
-        this.gotoSlot(textarea.selectionEnd);
-    });
+    // the "reactToInput" event gets triggered AFTER "reactToKeystroke"
+    this.target.escalateEvent('reactToInput', event);
 };
+
+// CursorMorph synching:
 
 CursorMorph.prototype.updateTextAreaPosition = function () {
     var origin = this.target.bounds.origin;
@@ -5721,13 +5703,7 @@ CursorMorph.prototype.destroy = function () {
         this.target.alignment = this.originalAlignment;
         this.target.changed();
     }
-    this.destroyTextarea();
     CursorMorph.uber.destroy.call(this);
-};
-
-CursorMorph.prototype.destroyTextarea = function () {
-    document.body.removeChild(this.textarea);
-    this.textarea = null;
 };
 
 // BoxMorph ////////////////////////////////////////////////////////////
@@ -7368,8 +7344,8 @@ InspectorMorph.prototype.updateCurrentSelection = function () {
         root = this.root();
 
     if (root &&
-            (root.keyboardReceiver instanceof CursorMorph) &&
-            (root.keyboardReceiver.target === currentTxt)) {
+            (root.keyboardFocus instanceof CursorMorph) &&
+            (root.keyboardFocus.target === currentTxt)) {
         this.hasUserEditedDetails = true;
         return;
     }
@@ -8158,7 +8134,7 @@ MenuMorph.prototype.closeSubmenu = function () {
 // MenuMorph keyboard accessibility
 
 MenuMorph.prototype.getFocus = function () {
-    this.world.keyboardReceiver = this;
+    this.world.keyboardFocus = this;
     this.selection = null;
     this.selectFirst();
     this.hasFocus = true;
@@ -8276,7 +8252,7 @@ MenuMorph.prototype.leaveSubmenu = function () {
         menu.submenu = null;
         menu.hasFocus = true;
         this.destroy();
-        menu.world.keyboardReceiver = menu;
+        menu.world.keyboardFocus = menu;
     }
 };
 
@@ -8290,7 +8266,7 @@ MenuMorph.prototype.select = function (aMenuItem) {
 
 MenuMorph.prototype.destroy = function () {
     if (this.hasFocus) {
-        this.world.keyboardReceiver = null;
+        this.world.keyboardFocus = null;
     }
     MenuMorph.uber.destroy.call(this);
 };
@@ -11615,7 +11591,7 @@ WorldMorph.prototype.init = function (aCanvas, fillPage) {
     this.animations = [];
     this.hand = new HandMorph(this);
     this.keyboardHandler = null;
-    this.keyboardReceiver = null;
+    this.keyboardFocus = null;
     this.cursor = null;
     this.lastEditedText = null;
     this.activeMenu = null;
@@ -11745,46 +11721,26 @@ WorldMorph.prototype.getGlobalPixelColor = function (point) {
 // WorldMorph events:
 
 WorldMorph.prototype.initKeyboardHandler = function () {
-    // this.keyboardHandler = this.worldCanvas; // slow on Safari
-    if (this.keyboardHandler) {
-        document.body.removeChild(this.keyboardHandler);
-        this.keyboardHandler = null;
-    }
-    this.keyboardHandler = document.createElement("input");
-    this.keyboardHandler.type = "text";
-    this.keyboardHandler.style.color = "transparent";
-    this.keyboardHandler.style.backgroundColor = "transparent";
-    this.keyboardHandler.style.border = "none";
-    this.keyboardHandler.style.outline = "none";
-    this.keyboardHandler.style.position = "absolute";
-    this.keyboardHandler.style.top = "0px";
-    this.keyboardHandler.style.left = "0px";
-    this.keyboardHandler.style.width = "0px";
-    this.keyboardHandler.style.height = "0px";
-    this.keyboardHandler.autocapitalize = "none"; // iOS specific
+    this.keyboardHandler = document.createElement('textarea');
+    this.keyboardHandler.style.zIndex = -1;
+    this.keyboardHandler.style.position = 'absolute';
+    this.keyboardHandler.wrap = "off";
+    this.keyboardHandler.style.overflow = "hidden";
+    // this.keyboardHandler.style.fontSize = this.target.fontSize + 'px';
+    this.keyboardHandler.autofocus = true; // commented out b/c of issues
+    // this.keyboardHandler.value = this.target.text;
     document.body.appendChild(this.keyboardHandler);
-
-    /* // for debugging
-    this.keyboardHandler.addEventListener(
-        "focus",
-        event => console.log('keyboard handler focused'),
-        false
-    );
-
-    this.keyboardHandler.addEventListener(
-        "blur",
-        event => console.log('keyboard handler lost focus'),
-        false
-    );
-    */
+    // this.textarea.focus();
+    // this.updateTextAreaPosition();
+    // this.syncTextareaSelectionWith(this.target);
 
     this.keyboardHandler.addEventListener(
         "keydown",
          event => {
             // remember the keyCode in the world's currentKey property
             this.currentKey = event.keyCode;
-            if (this.keyboardReceiver) {
-                this.keyboardReceiver.processKeyDown(event);
+            if (this.keyboardFocus && this.keyboardFocus.processKeyDown) {
+                this.keyboardFocus.processKeyDown(event);
             }
             // supress backspace override
             if (event.keyCode === 8) {
@@ -11793,8 +11749,8 @@ WorldMorph.prototype.initKeyboardHandler = function () {
             // supress tab override and make sure tab gets
             // received by all browsers
             if (event.keyCode === 9) {
-                if (this.keyboardReceiver) {
-                    this.keyboardReceiver.processKeyPress(event);
+                if (this.keyboardFocus && this.keyboardFocus.processKeyPress) {
+                    this.keyboardFocus.processKeyPress(event);
                 }
                 event.preventDefault();
             }
@@ -11808,10 +11764,8 @@ WorldMorph.prototype.initKeyboardHandler = function () {
             // flush the world's currentKey property
             this.currentKey = null;
             // dispatch to keyboard receiver
-            if (this.keyboardReceiver) {
-                if (this.keyboardReceiver.processKeyUp) {
-                    this.keyboardReceiver.processKeyUp(event);
-                }
+            if (this.keyboardFocus && this.keyboardFocus.processKeyUp) {
+                this.keyboardFocus.processKeyUp(event);
             }
             event.preventDefault();
         },
@@ -11821,8 +11775,23 @@ WorldMorph.prototype.initKeyboardHandler = function () {
     this.keyboardHandler.addEventListener(
         "keypress",
         event => {
-            if (this.keyboardReceiver) {
-                this.keyboardReceiver.processKeyPress(event);
+            if (this.keyboardFocus && this.keyboardFocus.processKeyPress) {
+                this.keyboardFocus.processKeyPress(event);
+                event.preventDefault();
+            }
+        },
+        false
+    );
+
+    this.keyboardHandler.addEventListener(
+        "input",
+        event => {
+            if (this.keyboardFocus && this.keyboardFocus.processInput) {
+                // flush the world's currentKey property
+                this.currentKey = null;
+                this.keyboardFocus.processInput(event);
+            } else {
+                this.value = '';
             }
             event.preventDefault();
         },
@@ -11844,7 +11813,6 @@ WorldMorph.prototype.initEventListeners = function () {
         "mousedown",
         event => {
             event.preventDefault();
-            this.keyboardHandler.focus();
             this.hand.processMouseDown(event);
         },
         true // prevent Safari from overriding right-click
@@ -12290,7 +12258,8 @@ WorldMorph.prototype.edit = function (aStringOrTextMorph) {
     if (this.cursor) {
         this.cursor.destroy();
     }
-    this.cursor = new CursorMorph(aStringOrTextMorph);
+    this.cursor = new CursorMorph(aStringOrTextMorph, this.keyboardHandler);
+    this.keyboardFocus = this.cursor;
     aStringOrTextMorph.parent.add(this.cursor);
     if (MorphicPreferences.useSliderForInput) {
         if (!aStringOrTextMorph.parentThatIsA(MenuMorph)) {
@@ -12351,12 +12320,11 @@ WorldMorph.prototype.stopEditing = function () {
         this.cursor.destroy();
         this.cursor = null;
     }
-    if (this.keyboardReceiver && this.keyboardReceiver.stopEditing) {
-    	this.keyboardReceiver.stopEditing();
+    if (this.keyboardFocus && this.keyboardFocus.stopEditing) {
+    	this.keyboardFocus.stopEditing();
     }
-    this.keyboardReceiver = null;
+    this.keyboardFocus = null;
     this.lastEditedText = null;
-    this.keyboardHandler.focus();
 };
 
 WorldMorph.prototype.toggleBlurredShadows = function () {
