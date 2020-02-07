@@ -11808,6 +11808,13 @@ WorldMorph.prototype.initEventListeners = function () {
         "mousedown",
         event => {
             event.preventDefault();
+            if (!this.onNextStep) {
+                // horrible kludge to keep Safari from popping up
+                // a overlay when right-clicking out of a focused
+                // and edited text or string element
+                this.keyboardHandler.blur();
+                this.onNextStep = () => this.keyboardHandler.focus();
+            }
             this.hand.processMouseDown(event);
         },
         true // prevent Safari from overriding right-click
