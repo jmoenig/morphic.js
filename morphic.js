@@ -11739,7 +11739,8 @@ WorldMorph.prototype.initKeyboardHandler = function () {
     this.keyboardHandler.style.position = 'absolute';
     this.keyboardHandler.wrap = "off";
     this.keyboardHandler.style.overflow = "hidden";
-    this.keyboardHandler.autofocus = true; // commented out b/c of issues
+    // to do: reuse keyboard handler in several worlds, if any
+    this.keyboardHandler.autofocus = true;
     document.body.appendChild(this.keyboardHandler);
 
     this.keyboardHandler.addEventListener(
