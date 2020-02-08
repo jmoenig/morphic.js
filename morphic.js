@@ -11745,6 +11745,10 @@ WorldMorph.prototype.initKeyboardHandler = function () {
          event => {
             // remember the keyCode in the world's currentKey property
             this.currentKey = event.keyCode;
+            if (this.activeMenu && !this.activeMenu.hasFocus) {
+                this.stopEditing();
+                this.activeMenu.getFocus();
+            }
             if (this.keyboardFocus && this.keyboardFocus.processKeyDown) {
                 this.keyboardFocus.processKeyDown(event);
             }
