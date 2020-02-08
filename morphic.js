@@ -66,6 +66,8 @@
      * fullImageClassic() => is always just fullImage()
      * keyboardReceiver => keyboardFocus
 
+     * keyboard navigation can be activated for any visible menu by pressing an arbitrary key
+
 
     documentation contents
     ----------------------
