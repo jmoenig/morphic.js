@@ -10496,7 +10496,7 @@ ScrollFrameMorph.prototype.startAutoScrolling = function () {
                 (hand.children.length > 0)) {
             this.autoScroll(pos);
         } else {
-            this.step = nop();
+            this.step = nop;
             this.autoScrollTrigger = null;
         }
     };
