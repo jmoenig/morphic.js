@@ -5705,6 +5705,9 @@ CursorMorph.prototype.destroy = function () {
         this.target.changed();
     }
     CursorMorph.uber.destroy.call(this);
+    this.textarea.value = '';
+    this.textarea.style.top = 0;
+    this.textarea.style.left = 0;
 };
 
 // BoxMorph ////////////////////////////////////////////////////////////
