@@ -5458,14 +5458,21 @@ CursorMorph.prototype.processKeyDown = function (event) {
  
     if (!isNil(this.target.receiver) && (event.ctrlKey || event.metaKey)) {
         if (keyName === 'd') {
+            event.preventDefault();
             this.target.doIt();
+            return;
         } else if (keyName === 'i') {
+            event.preventDefault();
             this.target.inspectIt();
+            return;
         } else if (keyName === 'p') {
+            event.preventDefault();
             this.target.showIt();
+            return;
         }
-        event.preventDefault();
-    } else if (keyName === 'Tab' || keyName === 'U+0009') {
+    }
+
+    if (keyName === 'Tab' || keyName === 'U+0009') {
         // +++ to do: refactor to use a CASE statement here
         if (shift) {
             this.target.backTab(this.target);
