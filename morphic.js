@@ -1174,7 +1174,7 @@
 
 /*global window, HTMLCanvasElement, FileReader, Audio, FileList, Map*/
 
-var morphicVersion = '2020-February-07';
+var morphicVersion = '2020-February-08';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -10457,11 +10457,11 @@ ScrollFrameMorph.prototype.mouseDownLeft = function (pos) {
             oldPos = newPos;
         } else {
             if (!this.hasVelocity) {
-                this.step = nop();
+                this.step = nop;
             } else {
                 if ((Math.abs(deltaX) < 0.5) &&
                         (Math.abs(deltaY) < 0.5)) {
-                    this.step = nop();
+                    this.step = nop;
                 } else {
                     deltaX = deltaX * friction;
                     this.scrollX(Math.round(deltaX));
