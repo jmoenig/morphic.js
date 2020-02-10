@@ -1176,7 +1176,7 @@
 
 /*global window, HTMLCanvasElement, FileReader, Audio, FileList, Map*/
 
-var morphicVersion = '2020-February-08';
+var morphicVersion = '2020-February-10';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -11734,32 +11734,41 @@ WorldMorph.prototype.getGlobalPixelColor = function (point) {
 // WorldMorph events:
 
 WorldMorph.prototype.initKeyboardHandler = function () {
-    this.keyboardHandler = document.createElement('textarea');
-    this.keyboardHandler.style.zIndex = -1;
-    this.keyboardHandler.style.position = 'absolute';
-    this.keyboardHandler.wrap = "off";
-    this.keyboardHandler.style.overflow = "hidden";
-    // to do: reuse keyboard handler in several worlds, if any
-    this.keyboardHandler.autofocus = true;
-    document.body.appendChild(this.keyboardHandler);
+    var kbd = document.getElementById('morphic_keyboard');
+    if (kbd) { // share existing handler with other worlds
+        this.keyboardHandler = kbd;
+        return;
+    }
+    kbd = document.createElement('textarea');
+    kbd.setAttribute('id', 'morphic_keyboard');
+    kbd.world = this;
+    kbd.style.zIndex = -1;
+    kbd.style.position = 'absolute';
+    kbd.wrap = "off";
+    kbd.style.overflow = "hidden";
+    kbd.autofocus = true;
+    document.body.appendChild(kbd);
+    this.keyboardHandler = kbd;
 
-    this.keyboardHandler.addEventListener(
+    kbd.addEventListener(
         "keydown",
          event => {
             // remember the keyCode in the world's currentKey property
-            this.currentKey = event.keyCode;
-            if (this.activeMenu && !this.activeMenu.hasFocus) {
-                this.stopEditing();
-                this.activeMenu.getFocus();
+            kbd.world.currentKey = event.keyCode;
+            if (kbd.world.activeMenu && !kbd.world.activeMenu.hasFocus) {
+                kbd.world.stopEditing();
+                kbd.world.activeMenu.getFocus();
             }
-            if (this.keyboardFocus && this.keyboardFocus.processKeyDown) {
-                this.keyboardFocus.processKeyDown(event);
+            if (kbd.world.keyboardFocus &&
+                    kbd.world.keyboardFocus.processKeyDown) {
+                kbd.world.keyboardFocus.processKeyDown(event);
             }
             // supress tab override and make sure tab gets
             // received by all browsers
             if (event.keyCode === 9) {
-                if (this.keyboardFocus && this.keyboardFocus.processKeyPress) {
-                    this.keyboardFocus.processKeyPress(event);
+                if (kbd.world.keyboardFocus &&
+                        kbd.world.keyboardFocus.processKeyPress) {
+                    kbd.world.keyboardFocus.processKeyPress(event);
                 }
                 event.preventDefault();
             }
@@ -11767,40 +11776,43 @@ WorldMorph.prototype.initKeyboardHandler = function () {
         true
     );
 
-    this.keyboardHandler.addEventListener(
+    kbd.addEventListener(
         "keyup",
         event => {
             // flush the world's currentKey property
-            this.currentKey = null;
+            kbd.world.currentKey = null;
             // dispatch to keyboard receiver
-            if (this.keyboardFocus && this.keyboardFocus.processKeyUp) {
-                this.keyboardFocus.processKeyUp(event);
+            if (kbd.world.keyboardFocus &&
+                    kbd.world.keyboardFocus.processKeyUp) {
+                kbd.world.keyboardFocus.processKeyUp(event);
             }
             event.preventDefault();
         },
         false
     );
 
-    this.keyboardHandler.addEventListener(
+    kbd.addEventListener(
         "keypress",
         event => {
-            if (this.keyboardFocus && this.keyboardFocus.processKeyPress) {
-                this.keyboardFocus.processKeyPress(event);
+            if (kbd.world.keyboardFocus &&
+                    kbd.world.keyboardFocus.processKeyPress) {
+                kbd.world.keyboardFocus.processKeyPress(event);
                 event.preventDefault();
             }
         },
         false
     );
 
-    this.keyboardHandler.addEventListener(
+    kbd.addEventListener(
         "input",
         event => {
-            if (this.keyboardFocus && this.keyboardFocus.processInput) {
+            if (kbd.world.keyboardFocus &&
+                    kbd.world.keyboardFocus.processInput) {
                 // flush the world's currentKey property
-                this.currentKey = null;
-                this.keyboardFocus.processInput(event);
+                kbd.world.currentKey = null;
+                kbd.world.keyboardFocus.processInput(event);
             } else {
-                this.keyboardHandler.value = '';
+                kbd.world.keyboardHandler.value = '';
             }
             event.preventDefault();
         },
@@ -11821,6 +11833,7 @@ WorldMorph.prototype.initEventListeners = function () {
         "mousedown",
         event => {
             event.preventDefault();
+            this.keyboardHandler.world = this; // focus the current world
             if (!this.onNextStep) {
                 // horrible kludge to keep Safari from popping up
                 // a overlay when right-clicking out of a focused
