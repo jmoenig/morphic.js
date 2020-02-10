@@ -5599,8 +5599,9 @@ CursorMorph.prototype.processInput = function (event) {
 // CursorMorph synching:
 
 CursorMorph.prototype.updateTextAreaPosition = function () {
-    var origin = this.target.bounds.origin;
-
+    var pos = getDocumentPositionOf(this.target.world().worldCanvas),
+        origin = this.target.bounds.origin.add(new Point(pos.x, pos.y));
+ 
     function number2px (n) {
         return Math.ceil(n) + 'px';
     }
@@ -5714,9 +5715,7 @@ CursorMorph.prototype.destroy = function () {
         this.target.changed();
     }
     CursorMorph.uber.destroy.call(this);
-    this.textarea.value = '';
-    this.textarea.style.top = 0;
-    this.textarea.style.left = 0;
+    this.target.world().resetKeyboardHandler();
 };
 
 // BoxMorph ////////////////////////////////////////////////////////////
@@ -11611,6 +11610,7 @@ WorldMorph.prototype.init = function (aCanvas, fillPage) {
     this.activeHandle = null;
 
     this.initKeyboardHandler();
+    this.resetKeyboardHandler();
     this.initEventListeners();
 };
 
@@ -11820,6 +11820,18 @@ WorldMorph.prototype.initKeyboardHandler = function () {
     );
 };
 
+WorldMorph.prototype.resetKeyboardHandler = function () {
+    var pos = getDocumentPositionOf(this.worldCanvas);
+
+    function number2px (n) {
+        return Math.ceil(n) + 'px';
+    }
+
+    this.keyboardHandler.value = '';
+    this.keyboardHandler.style.top = number2px(pos.y);
+    this.keyboardHandler.style.left = number2px(pos.x);
+}
+
 WorldMorph.prototype.initEventListeners = function () {
     var canvas = this.worldCanvas;
 
@@ -11834,6 +11846,7 @@ WorldMorph.prototype.initEventListeners = function () {
         event => {
             event.preventDefault();
             this.keyboardHandler.world = this; // focus the current world
+            this.resetKeyboardHandler();
             if (!this.onNextStep) {
                 // horrible kludge to keep Safari from popping up
                 // a overlay when right-clicking out of a focused
@@ -11843,7 +11856,7 @@ WorldMorph.prototype.initEventListeners = function () {
             }
             this.hand.processMouseDown(event);
         },
-        true // prevent Safari from overriding right-click
+        true
     );
 
     canvas.addEventListener(
