@@ -9911,27 +9911,19 @@ MenuItemMorph.prototype.createLabelPart = function (source) {
     return this.createIcon(source);
 };
 
-MenuItemMorph.prototype.createIcon = function (source) { // +++ under construction
+MenuItemMorph.prototype.createIcon = function (source) {
     // source can be either a Morph or an HTMLCanvasElement
-    var icon = new Morph(),
-        src;
-    // +++ to do: tell Morph to cache the image
-    icon.isCachingImage = true; // +++ review
-    icon.cachedImage = source instanceof Morph ? source.fullImage() : source; // +++ review this
-    // adjust shadow dimensions
-    if (source instanceof Morph && source.getShadow()) {
-        src = icon.cachedImage;
-        icon.cachedImage = newCanvas(
-            source.fullBounds().extent().subtract(
-                this.shadowBlur * (useBlurredShadows ? 1 : 2)
-            )
-        );
-        icon.cachedImage.getContext('2d').drawImage(src, 0, 0); // +++ review
+    var icon;
+
+    if (source instanceof Morph) {
+        return source.fullCopy();
     }
-    icon.setExtent(new Point(
-        icon.cachedImage.width,
-        icon.cachedImage.height)
-    );
+    // assume a Canvas
+    icon = new Morph();
+    icon.isCachingImage = true;
+    icon.cachedImage = source; // should we copy the canvas?
+    icon.bounds.setWidth(source.width);
+    icon.bounds.setHeight(source.height);
     return icon;
 };
 
@@ -12137,8 +12129,9 @@ WorldMorph.prototype.userCreateMorph = function () {
     var myself = this, menu, newMorph;
 
     function create(aMorph) {
-        aMorph.isDraggable = true;
-        aMorph.pickUp(myself);
+        var cpy = aMorph.fullCopy();
+        cpy.isDraggable = true;
+        cpy.pickUp(myself);
     }
 
     menu = new MenuMorph(this, 'make a morph');
