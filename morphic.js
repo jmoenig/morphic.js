@@ -1176,7 +1176,7 @@
 
 /*global window, HTMLCanvasElement, FileReader, Audio, FileList, Map*/
 
-var morphicVersion = '2020-February-10';
+var morphicVersion = '2020-February-12';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
 
@@ -4331,6 +4331,12 @@ Morph.prototype.developersMenu = function () {
 
 Morph.prototype.userMenu = function () {
     return null;
+};
+
+Morph.prototype.addToDemoMenu = function (aMorphOrMenuArray) {
+    // register a Morph or a Menu with Morphs with the World's demos menu
+    // a menu can be added in the form of a two-item array: [name, [morphs]]
+    WorldMorph.prototype.customMorphs.push(aMorphOrMenuArray);
 };
 
 // Morph menu actions
@@ -11571,6 +11577,10 @@ WorldMorph.prototype = new FrameMorph();
 WorldMorph.prototype.constructor = WorldMorph;
 WorldMorph.uber = FrameMorph.prototype;
 
+// WorldMorph global settings & examples
+
+WorldMorph.prototype.customMorphs = [];
+
 // WorldMorph instance creation:
 
 function WorldMorph(aCanvas, fillPage) {
@@ -12238,10 +12248,18 @@ WorldMorph.prototype.userCreateMorph = function () {
         create(foo);
     });
     menu.addItem('pen', () => create(new PenMorph()));
-    if (this.customMorphs) {
+    if (this.customMorphs.length) {
         menu.addLine();
-        this.customMorphs().forEach(morph => {
-            menu.addItem(morph.toString(), () => create(morph));
+        this.customMorphs.forEach(item => {
+            var sub;
+            if (item instanceof Array) { // assume [name, [morphs]]
+                sub = new MenuMorph();
+                item[1].forEach(morph => sub.addItem(morph,
+                    () => create(morph)));
+                menu.addMenu(item[0], sub);
+            } else { // assume a Morph
+                menu.addItem(item.toString(), () => create(item));
+            }
         });
     }
     menu.popUpAtHand(this);
