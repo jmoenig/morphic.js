@@ -8093,8 +8093,8 @@ MenuMorph.prototype.popup = function (world, pos) {
 
 MenuMorph.prototype.scroll = function () {
     // private - move all items into a scroll frame
-     var scroller = new ScrollFrameMorph(),
-          start = this.label ? 1 : 0,
+    var scroller = new ScrollFrameMorph(),
+        start = this.label ? 1 : 0,
         first = this.children[start];
 
     scroller.setPosition(first.position());
@@ -10051,13 +10051,27 @@ MenuItemMorph.prototype.delaySubmenu = function () {
 };
 
 MenuItemMorph.prototype.popUpSubmenu = function () {
-    var menu = this.parentThatIsA(MenuMorph);
+    var menu = this.parentThatIsA(MenuMorph),
+        world = this.world(),
+        scroller;
+
     if (!(this.action instanceof MenuMorph)) {return; }
     this.action.createItems();
     this.action.setPosition(this.topRight().subtract(new Point(0, 5)));
     this.action.addShadow(new Point(2, 2), 80);
     this.action.keepWithin(this.world());
     if (this.action.items.length < 1 && !this.action.title) {return; }
+
+    if (this.action.bottom() > world.bottom()) {
+        // scroll menu items if the menu is taller than the world
+        this.action.removeShadow();
+        scroller = this.action.scroll();
+        this.action.bounds.corner.y = world.bottom() - 2;
+        this.action.addShadow(new Point(2, 2), 80);
+        scroller.setHeight(world.bottom() - scroller.top() - 6);
+        scroller.adjustScrollBars(); // ?
+     }
+    
     menu.add(this.action);
     menu.submenu = this.action;
     menu.submenu.world = menu.world; // keyboard control
@@ -11840,7 +11854,7 @@ WorldMorph.prototype.resetKeyboardHandler = function () {
     this.keyboardHandler.value = '';
     this.keyboardHandler.style.top = number2px(pos.y);
     this.keyboardHandler.style.left = number2px(pos.x);
-}
+};
 
 WorldMorph.prototype.initEventListeners = function () {
     var canvas = this.worldCanvas;
