@@ -69,6 +69,7 @@
      * keyboard navigation can be activated for any visible menu by pressing an arbitrary key
 
     * new "noDropShadow" property for Morphs that already have built-in shadows (Menus, SpeechBubbles)
+    * new "fullShadowSource" flag for Morphs, default is true, turn off (false) to only use the simple image instead of fullImage()
 
     documentation contents
     ----------------------
@@ -1179,7 +1180,7 @@
 
 var morphicVersion = '2020-February-20';
 var modules = {}; // keep track of additional loaded modules
-var useBlurredShadows = getBlurredShadowSupport(); // check for Chrome-bug
+var useBlurredShadows = true;
 
 const ZERO = new Point();
 Object.freeze(ZERO);
@@ -1404,29 +1405,6 @@ function getMinimumFontHeight() {
         }
     }
     return 0;
-}
-
-function getBlurredShadowSupport() {
-    // check for Chrome issue 90001
-    // http://code.google.com/p/chromium/issues/detail?id=90001
-    var source, target, ctx;
-    source = document.createElement('canvas');
-    source.width = 10;
-    source.height = 10;
-    ctx = source.getContext('2d');
-    ctx.fillStyle = 'rgb(255, 0, 0)';
-    ctx.beginPath();
-    ctx.arc(5, 5, 5, 0, Math.PI * 2, true);
-    ctx.closePath();
-    ctx.fill();
-    target = document.createElement('canvas');
-    target.width = 10;
-    target.height = 10;
-    ctx = target.getContext('2d');
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = 'rgba(0, 0, 255, 1)';
-    ctx.drawImage(source, 0, 0);
-    return ctx.getImageData(0, 0, 1, 1).data[3] ? true : false;
 }
 
 function getDocumentPositionOf(aDOMelement) {
@@ -3062,6 +3040,7 @@ Morph.prototype.init = function () {
     this.acceptsDrops = false;
     this.isFreeForm = false;
     this.noDropShadow = false;
+    this.fullShadowSource = true;
     this.fps = 0;
     this.customContextMenu = null;
     this.lastTime = Date.now();
@@ -3529,12 +3508,17 @@ Morph.prototype.fullImage = function () {
 // Morph shadow:
 
 Morph.prototype.shadowImage = function (off, color) {
-    // fallback for Windows Chrome-Shadow bug
+    // for flat design mode
     var fb, img, outline, sha, ctx,
         offset = off || new Point(7, 7),
         clr = color || new Color(0, 0, 0);
-    fb = this.fullBounds().extent();
-    img = this.fullImage();
+    if (this.fullShadowSource) {
+        fb = this.fullBounds().extent();
+        img = this.fullImage();
+    } else { // optimization when all submorphs are contained inside
+        fb = this.extent();
+        img = this.getImage();
+    }
     outline = newCanvas(fb);
     ctx = outline.getContext('2d');
     ctx.drawImage(img, 0, 0);
@@ -3558,8 +3542,13 @@ Morph.prototype.shadowImageBlurred = function (off, color) {
         offset = off || new Point(7, 7),
         blur = this.shadowBlur,
         clr = color || new Color(0, 0, 0);
-    fb = this.fullBounds().extent().add(blur * 2);
-    img = this.fullImage();
+    if (this.fullShadowSource) {
+        fb = this.fullBounds().extent().add(blur * 2);
+        img = this.fullImage();
+    } else { // optimization when all submorphs are contained inside
+        fb = this.extent().add(blur * 2);
+        img = this.getImage();
+    }
     sha = newCanvas(fb);
     ctx = sha.getContext('2d');
     ctx.shadowOffsetX = offset.x;
@@ -5977,6 +5966,7 @@ SpeechBubbleMorph.prototype.init = function (
         borderColor || new Color(140, 140, 140)
     );
     this.noDropShadow = true;
+    this.fullShadowSource = false;
     this.color = color || new Color(230, 230, 230);
     this.fixLayout();
 };
@@ -7824,6 +7814,7 @@ MenuMorph.prototype.init = function (target, title, environment, fontSize) {
     // override inherited properties:
     this.isDraggable = false;
     this.noDropShadow = true;
+    this.fullShadowSource = false;
 
     // immutable properties:
     this.border = null;
