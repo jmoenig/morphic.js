@@ -9,18 +9,18 @@
 
 			window.onload = function () {
 				world = new WorldMorph(document.getElementById('world'));
-                // +++ world.worldCanvas.focus();
 				world.isDevMode = true;
 				loop();
 			};
 
 			function loop() {
-        requestAnimationFrame(loop);
+                requestAnimationFrame(loop);
 				world.doOneCycle();
 			}
 		</script>
 	</head>
 	<body style="margin: 0;">
-		<canvas id="world" tabindex="1" width="800" height="600" style="position: absolute;"></canvas>
+		<canvas id="world" tabindex="1" width="800" height="600"
+            style="position: absolute;"></canvas>
 	</body>
 </html>
