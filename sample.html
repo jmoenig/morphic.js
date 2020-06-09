@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>touch me!</title>
+        <script type="text/javascript" src="morphic.js"></script>
+        <script type="text/javascript">
+            var worldCanvas, sensor;
+
+            window.onload = function () {
+                var x, y, w, h;
+
+                worldCanvas = document.getElementById('world');
+                world = new WorldMorph(worldCanvas);
+                world.isDevMode = false;
+                world.setColor(new Color());
+
+                w = 100;
+                h = 100;
+
+                x = 0;
+                y = 0;
+
+                while ((y * h) < world.height()) {
+                    while ((x * w) < world.width()) {
+                        sensor = new MouseSensorMorph();
+                        sensor.setPosition(new Point(x * w, y * h));
+                        sensor.alpha = 0;
+                        sensor.setExtent(new Point(w, h));
+                        world.add(sensor);
+                        x += 1;
+                    }
+                    x = 0;
+                    y += 1;
+                }
+                loop();
+            };
+
+            function loop() {
+                requestAnimationFrame(loop);
+                world.doOneCycle();
+            }
+        </script>
+    </head>
+    <body bgcolor='black' style="margin: 0;">
+        <canvas id="world" width="800" height="600"
+            style="position: absolute;"></canvas>
+    </body>
+</html>
