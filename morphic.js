@@ -479,7 +479,7 @@
 
         MyMorph.prototype.mouseMove = function(pos) {};
 
-    All of these methods have as optional parameter a Point object
+    Most of these methods have as optional parameter a Point object
     indicating the current position of the Hand inside the World's
     coordinate system. The
 
@@ -488,6 +488,14 @@
     event method has an additional optional parameter indicating the
     currently pressed mouse button, which is either 'left' or 'right'.
     You can use this to let users interact with 3D environments.
+
+    The
+
+        mouseEnterDragging(morph)
+        mouseLeaveDragging(morph)
+
+    event methods have as optional parameter the morph currently dragged by
+    the Hand, if any.
 
     Events may be "bubbled" up a morph's owner chain by calling
 
@@ -11423,7 +11431,7 @@ HandMorph.prototype.processMouseMove = function (event) {
                 old.mouseLeave();
             }
             if (old.mouseLeaveDragging && this.mouseButton) {
-                old.mouseLeaveDragging();
+                old.mouseLeaveDragging(this.children[0]);
             }
         }
     });
@@ -11433,7 +11441,7 @@ HandMorph.prototype.processMouseMove = function (event) {
                 newMorph.mouseEnter();
             }
             if (newMorph.mouseEnterDragging && this.mouseButton) {
-                newMorph.mouseEnterDragging();
+                newMorph.mouseEnterDragging(this.children[0]);
             }
         }
 
