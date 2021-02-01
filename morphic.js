@@ -4423,6 +4423,11 @@ Morph.prototype.developersMenu = function () {
         'open a window\non all properties'
     );
     menu.addItem(
+        "log in console...",
+        function() { console.log("Snap!",this); },
+        'log this morph to console'
+    );
+    menu.addItem(
         "pic...",
         () => window.open(this.fullImage().toDataURL()),
         'open a new window\nwith a picture of this morph'
