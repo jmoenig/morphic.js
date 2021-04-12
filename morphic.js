@@ -12306,13 +12306,17 @@ WorldMorph.prototype.wantsDropOf = function () {
     return this.acceptsDrops;
 };
 
-WorldMorph.prototype.droppedImage = function () {
-    return null;
-};
+WorldMorph.prototype.droppedImage = nop;
 
-WorldMorph.prototype.droppedSVG = function () {
-    return null;
-};
+WorldMorph.prototype.droppedSVG = nop;
+
+WorldMorph.prototype.droppedAudio = nop;
+
+WorldMorph.prototype.droppedText;
+
+WorldMorph.prototype.beginBulkDrop = nop;
+
+WorldMorph.prototype.endBulkDrop = nop;
 
 // WorldMorph text field tabbing:
 
