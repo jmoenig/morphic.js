@@ -8238,6 +8238,7 @@ MenuMorph.prototype.popUpAtHand = function (world) {
 MenuMorph.prototype.popUpCenteredAtHand = function (world) {
     var wrrld = world || this.world;
     this.fixLayout();
+    this.createItems();
     this.popup(
         wrrld,
         wrrld.hand.position().subtract(
@@ -8249,6 +8250,7 @@ MenuMorph.prototype.popUpCenteredAtHand = function (world) {
 MenuMorph.prototype.popUpCenteredInWorld = function (world) {
     var wrrld = world || this.world;
     this.fixLayout();
+    this.createItems();
     this.popup(
         wrrld,
         wrrld.center().subtract(
