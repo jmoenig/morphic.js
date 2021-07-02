@@ -1289,7 +1289,7 @@
 
 /*global window, HTMLCanvasElement, FileReader, Audio, FileList, Map*/
 
-var morphicVersion = '2021-June-09';
+var morphicVersion = '2021-July-02';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = true;
 
@@ -12314,7 +12314,7 @@ WorldMorph.prototype.droppedSVG = nop;
 
 WorldMorph.prototype.droppedAudio = nop;
 
-WorldMorph.prototype.droppedText;
+WorldMorph.prototype.droppedText = nop;
 
 WorldMorph.prototype.beginBulkDrop = nop;
 
