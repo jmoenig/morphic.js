@@ -1,51 +1,50 @@
 <!DOCTYPE html>
 <html>
-	<head>
+    <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<title>Morphic!</title>
-		<script type="text/javascript" src="morphic.js"></script>
-		<script type="text/javascript">			
+        <title>Morphic!</title>
+        <script type="text/javascript" src="morphic.js"></script>
+        <script type="text/javascript">
+            var worldCanvas, world, hi, hint1, hint2;
 
-			var	worldCanvas, world, hi, hint1, hint2;
-
-			window.onload = function () {
-				worldCanvas = document.getElementById('world');
-				world = new WorldMorph(worldCanvas);
+            window.onload = function () {
+                worldCanvas = document.getElementById('world');
+                world = new WorldMorph(worldCanvas);
                 // +++ world.worldCanvas.focus();
-				world.isDevMode = true;
+                world.isDevMode = true;
 
-				hi = new StringMorph(
-					'Hello, World!', 48, 'serif');
-				hi.isDraggable = true;
-				hi.isEditable = true;
-				hi.setPosition(new Point(275, 200));
-				world.add(hi);
+                hi = new StringMorph(
+                    'Hello, World!', 48, 'serif');
+                hi.isDraggable = true;
+                hi.isEditable = true;
+                hi.setPosition(new Point(275, 200));
+                world.add(hi);
 
-				hint1 = new StringMorph(
-					'right click...', 20, 'serif');
-				hint1.isDraggable = true;
-				hint1.isEditable = true;
-				hint1.setPosition(new Point(350, 270));
-				world.add(hint1);
-				
-				hint2 = new StringMorph(
-					'(or double touch)', 10, 'sans-serif');
-				hint2.isDraggable = true;
-				hint2.isEditable = true;
-				hint2.setPosition(hint1.bottomLeft());
-				world.add(hint2);
+                hint1 = new StringMorph(
+                    'right click...', 20, 'serif');
+                hint1.isDraggable = true;
+                hint1.isEditable = true;
+                hint1.setPosition(new Point(350, 270));
+                world.add(hint1);
+
+                hint2 = new StringMorph(
+                    '(or double touch)', 10, 'sans-serif');
+                hint2.isDraggable = true;
+                hint2.isEditable = true;
+                hint2.setPosition(hint1.bottomLeft());
+                world.add(hint2);
 
                 loop();
-			};
+            };
 
-			function loop() {
-                            requestAnimationFrame(loop);
-                            world.doOneCycle();
-			};
-		</script>
-	</head>
+            function loop() {
+                requestAnimationFrame(loop);
+                world.doOneCycle();
+            };
+        </script>
+    </head>
 
-	<body style="margin: 0;">
-		<canvas id="world" tabindex="1" width="800" height="600" style="position: absolute; left: 0px; right: 0px; width: 100%; height: 100%;" />
-	</body>
+    <body style="margin: 0;">
+        <canvas id="world" tabindex="1" width="800" height="600" style="position: absolute; left: 0px; right: 0px; width: 100%; height: 100%;" />
+    </body>
 </html>
