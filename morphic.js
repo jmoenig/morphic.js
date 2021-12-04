@@ -314,7 +314,7 @@
             <title>Morphic!</title>
             <script type="text/javascript" src="morphic.js"></script>
             <script type="text/javascript">
-                var	world1, world2;
+                var world1, world2;
 
                 window.onload = function () {
                     disableRetinaSupport();
@@ -5119,9 +5119,9 @@ PenMorph.prototype.developersMenu = function () {
 
 PenMorph.prototype.setRotation = function () {
     var menu, dial,
-    	name = this.name || this.constructor.name;
+        name = this.name || this.constructor.name;
     if (name.length > 10) {
-    	name = name.slice(0, 9) + '...';
+        name = name.slice(0, 9) + '...';
     }
     menu = new MenuMorph(this, name);
     dial = new DialMorph(null, null, this.heading);
@@ -6400,44 +6400,44 @@ DialMorph.prototype.init = function (min, max, value, tick, radius) {
 };
 
 DialMorph.prototype.setRadius = function (radius) {
-	this.radius = radius;
+    this.radius = radius;
     this.setExtent(new Point(this.radius * 2, this.radius * 2));
 };
 
 DialMorph.prototype.setValue = function (value, snapToTick, noUpdate) {
-	var range = this.max - this.min;
- 	value = value || 0;
+    var range = this.max - this.min;
+        value = value || 0;
     this.value = this.min + (((+value % range) + range) % range);
     if (snapToTick) {
-    	if (this.value < this.tick) {
-     		this.value = this.min;
-       	} else {
-    		this.value -= this.value % this.tick % this.value;
+        if (this.value < this.tick) {
+            this.value = this.min;
+        } else {
+            this.value -= this.value % this.tick % this.value;
         }
     }
- 	this.changed();
-  	if (noUpdate) {return; }
-  	this.updateTarget();
+    this.changed();
+    if (noUpdate) {return; }
+    this.updateTarget();
 };
 
 DialMorph.prototype.getValueOf = function (point) {
     var range = this.max - this.min,
-    	center = this.center(),
+        center = this.center(),
         deltaX = point.x - center.x,
         deltaY = center.y - point.y,
         angle = Math.abs(deltaX) < 0.001 ? (deltaY < 0 ? 90 : 270)
                 : Math.round(
                 (deltaX >= 0 ? 0 : 180)
                     - (Math.atan(deltaY / deltaX) * 57.2957795131)
-        		),
+                ),
         value = angle + 90 % 360,
         ratio = value / 360;
     return range * ratio + this.min;
 };
 
 DialMorph.prototype.setExtent = function (aPoint) {
-	var size = Math.min(aPoint.x, aPoint.y);
-	this.radius = size / 2;
+    var size = Math.min(aPoint.x, aPoint.y);
+    this.radius = size / 2;
     DialMorph.uber.setExtent.call(this, new Point(size, size));
 };
 
@@ -6602,8 +6602,8 @@ DialMorph.prototype.mouseDownLeft = function (pos) {
     this.step = () => {
         if (world.hand.mouseButton) {
             this.setValue(
-            	this.getValueOf(world.hand.bounds.origin),
-             	world.currentKey !== 16 // snap to tick
+                this.getValueOf(world.hand.bounds.origin),
+                world.currentKey !== 16 // snap to tick
             );
         } else {
             this.step = null;
@@ -8155,7 +8155,7 @@ MenuMorph.prototype.maxWidth = function () {
 MenuMorph.prototype.adjustWidths = function () {
     var w = this.maxWidth();
     this.children.forEach(item => {
-    	if (!(item instanceof DialMorph)) {
+        if (!(item instanceof DialMorph)) {
             item.setWidth(w);
         }
         item.fixLayout();
@@ -8177,13 +8177,13 @@ MenuMorph.prototype.unselectAllItems = function () {
                 item.rerender();
             }
         } else if (item instanceof ScrollFrameMorph) {
-        	item.contents.children.forEach(morph => {
-         		if (morph instanceof MenuItemMorph &&
-                        morph.userState !== 'normal') {
+            item.contents.children.forEach(morph => {
+                if (morph instanceof MenuItemMorph &&
+                    morph.userState !== 'normal') {
                     morph.userState = 'normal';
                     morph.rerender();
-              	}
-         	});
+                }
+             });
         }
     });
 };
@@ -8191,7 +8191,7 @@ MenuMorph.prototype.unselectAllItems = function () {
 // MenuMorph popping up
 
 MenuMorph.prototype.popup = function (world, pos) {
-	var scroller;
+    var scroller;
 
     this.createItems();
     this.setPosition(pos);
@@ -8199,8 +8199,8 @@ MenuMorph.prototype.popup = function (world, pos) {
     this.keepWithin(world);
 
     if (this.bottom() > world.bottom()) {
-    	// scroll menu items if the menu is taller than the world
-    	this.removeShadow();
+        // scroll menu items if the menu is taller than the world
+        this.removeShadow();
         scroller = this.scroll();
         this.bounds.corner.y = world.bottom() - 2;
         this.addShadow(new Point(2, 2), 80);
@@ -8337,19 +8337,19 @@ MenuMorph.prototype.selectFirst = function () {
         if (items[i] instanceof MenuItemMorph) {
             this.select(items[i]);
             return;
-    	}
-	}
+        }
+    }
 };
 
 MenuMorph.prototype.selectUp = function () {
     var scroller, triggers, idx;
 
-	scroller = detect(
+    scroller = detect(
         this.children,
         morph => morph instanceof ScrollFrameMorph
     );
     triggers = (scroller ? scroller.contents.children : this.children).filter(
-    	each => each instanceof MenuItemMorph
+        each => each instanceof MenuItemMorph
     );
     if (!this.selection) {
         if (triggers.length) {
@@ -10135,7 +10135,7 @@ MenuItemMorph.prototype.mouseClickLeft = function () {
 };
 
 MenuItemMorph.prototype.isListItem = function () {
-	var menu = this.parentThatIsA(MenuMorph);
+    var menu = this.parentThatIsA(MenuMorph);
     if (menu) {
         return menu.isListContents;
     }
@@ -11278,7 +11278,7 @@ HandMorph.prototype.drop = function () {
         this.cachedFullBounds = null;
 
         if (!morphToDrop.noDropShadow) {
-	        morphToDrop.removeShadow();
+            morphToDrop.removeShadow();
         }
         this.children = [];
         this.setExtent(new Point());
@@ -12467,8 +12467,8 @@ WorldMorph.prototype.userCreateMorph = function () {
     menu.addLine();
     menu.addItem('slider', () => create(new SliderMorph()));
     menu.addItem('dial', () => {
-    	newMorph = new DialMorph();
-     	newMorph.pickUp(this);
+        newMorph = new DialMorph();
+        newMorph.pickUp(this);
     });
     menu.addItem('frame', () => {
         newMorph = new FrameMorph();
@@ -12721,7 +12721,7 @@ WorldMorph.prototype.stopEditing = function () {
         this.cursor = null;
     }
     if (this.keyboardFocus && this.keyboardFocus.stopEditing) {
-    	this.keyboardFocus.stopEditing();
+        this.keyboardFocus.stopEditing();
     }
     this.keyboardFocus = null;
     this.lastEditedText = null;
