@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html>
-	<head>
+    <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<title>Morphic!</title>
-		<script type="text/javascript" src="morphic.js"></script>
-		<script type="text/javascript">			
-			var	world; 
+        <title>Morphic!</title>
+        <script type="text/javascript" src="morphic.js"></script>
+        <script type="text/javascript">
+            var world; 
 
-			window.onload = function () {
-				world = new WorldMorph(document.getElementById('world'));
-				world.isDevMode = true;
-				loop();
-			};
+            window.onload = function () {
+                world = new WorldMorph(document.getElementById('world'));
+                world.isDevMode = true;
+                loop();
+            };
 
-			function loop() {
+            function loop() {
                 requestAnimationFrame(loop);
-				world.doOneCycle();
-			}
-		</script>
-	</head>
-	<body style="margin: 0;">
-		<canvas id="world" tabindex="1" width="800" height="600"
+                world.doOneCycle();
+            }
+        </script>
+    </head>
+    <body style="margin: 0;">
+        <canvas id="world" tabindex="1" width="800" height="600"
             style="position: absolute;"></canvas>
-	</body>
+    </body>
 </html>
