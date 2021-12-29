@@ -1752,15 +1752,21 @@ function enableRetinaSupport() {
             return uber.height.get.call(this) / getPixelRatio(this);
         },
         set: function(height) {
-            var pixelRatio = getPixelRatio(this),
-                context;
-            uber.height.set.call(this, height * pixelRatio);
-            context = this.getContext('2d');
-            /*
-            context.restore();
-            context.save();
-            */
-            context.scale(pixelRatio, pixelRatio);
+            try { // workaround one of FF's dreaded NS_ERROR_FAILURE bugs
+                // this should be taken out as soon as FF gets fixed again
+                var pixelRatio = getPixelRatio(this),
+                    context;
+                uber.height.set.call(this, height * pixelRatio);
+                context = this.getContext('2d');
+                /*
+                context.restore();
+                context.save();
+                */
+                context.scale(pixelRatio, pixelRatio);
+            } catch (err) {
+                console.log('Retina Display Support Problem', err);
+                uber.height.set.call(this, height);
+            }
         }
     });
 
