@@ -1291,7 +1291,7 @@
 
 /*jshint esversion: 6*/
 
-var morphicVersion = '2022-January-23';
+var morphicVersion = '2022-January-28';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = true;
 
