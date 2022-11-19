@@ -11270,7 +11270,7 @@ HandMorph.prototype.init = function (aWorld) {
     this.temporaries = [];
     this.touchHoldTimeout = null;
     this.contextMenuEnabled = false;
-    this.touchStartPosition = [];
+    this.touchStartPosition = new Point();
 
     // properties for caching dragged objects:
     this.cachedFullImage = null;
@@ -11517,10 +11517,10 @@ HandMorph.prototype.processTouchStart = function (event) {
     MorphicPreferences.isTouchDevice = true;
     clearInterval(this.touchHoldTimeout);
     if (event.touches.length === 1) {
-        this.touchStartPosition = [
+        this.touchStartPosition = new Point(
             event.touches[0].pageX,
             event.touches[0].pageY
-        ];
+        );
 
         this.touchHoldTimeout = setInterval( // simulate mouseRightClick
             () => {
@@ -11540,20 +11540,12 @@ HandMorph.prototype.processTouchStart = function (event) {
 HandMorph.prototype.processTouchMove = function (event) {
     MorphicPreferences.isTouchDevice = true;
 
-    let pos = [
+    let pos = new Point(
         event.touches[0].pageX,
         event.touches[0].pageY
-    ];
-
-    let dis = new Point(
-        this.touchStartPosition[0],
-        this.touchStartPosition[1]
-    ).distanceTo(
-        new Point(
-            pos[0],
-            pos[1]
-        )
     );
+
+    let dis = this.touchStartPosition.distanceTo(pos);
 
     if (dis > MorphicPreferences.grabThreshold) {
         if (event.touches.length === 1) {
