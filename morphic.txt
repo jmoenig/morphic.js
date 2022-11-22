@@ -9,8 +9,8 @@
 
     Copyright (C) 2010-2022 by Jens Mönig
 
-    This documentation last changed: August 03, 2022
-
+    This documentation last changed: November 21
+    
     This file is part of Snap!.
 
     Snap! is free software: you can redistribute it and/or modify
@@ -318,7 +318,6 @@
                 var	world1, world2;
 
                 window.onload = function () {
-                    disableRetinaSupport();
                     world1 = new WorldMorph(
                         document.getElementById('world1'), false);
                     world2 = new WorldMorph(
@@ -327,7 +326,7 @@
                 };
 
                 function loop() {
-            requestAnimationFrame(loop);
+                    requestAnimationFrame(loop);
                     world1.doOneCycle();
                     world2.doOneCycle();
                 }
