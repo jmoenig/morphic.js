@@ -3237,6 +3237,7 @@ Morph.prototype.init = function () {
     this.lastTime = Date.now();
     this.onNextStep = null; // optional function to be run once
     this.cursorStyle = null;
+    this.cursorGrabStyle = null;
 };
 
 // Morph string representation: e.g. 'a Morph 2 [20@45 | 130@250]'
@@ -11715,7 +11716,7 @@ HandMorph.prototype.processMouseMove = function (event) {
     this.mouseOverBounds = mouseOverBoundsNew;
 
     if (this.mouseButton === 'left' && this.morphToGrab) {
-        this.cursorStyle = this.morphToGrab.cursorStyle;
+        this.cursorStyle = this.morphToGrab.cursorGrabStyle || this.morphToGrab.cursorStyle;
     }
     if (this.cursorStyle == null) {
     
