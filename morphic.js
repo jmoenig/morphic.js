@@ -11658,7 +11658,6 @@ HandMorph.prototype.processMouseMove = function (event) {
             }
             this.setPosition(pos);
         }
-        this.cursorStyle = morph.cursorStyle;
     }
 
     this.mouseOverBounds.forEach(old => {
@@ -11715,8 +11714,10 @@ HandMorph.prototype.processMouseMove = function (event) {
     this.mouseOverList = mouseOverNew;
     this.mouseOverBounds = mouseOverBoundsNew;
 
+    if (this.mouseButton === 'left' && this.morphToGrab) {
+        this.cursorStyle = this.morphToGrab.cursorStyle;
+    }
     if (this.cursorStyle == null) {
-        this.cursorStyle = 'auto';
     
         for (const morph of this.mouseOverList) {
             if (morph.cursorStyle != null) {
