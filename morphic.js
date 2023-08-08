@@ -3236,6 +3236,7 @@ Morph.prototype.init = function () {
     this.customContextMenu = null;
     this.lastTime = Date.now();
     this.onNextStep = null; // optional function to be run once
+    this.cursorStyle = null;
 };
 
 // Morph string representation: e.g. 'a Morph 2 [20@45 | 130@250]'
@@ -11264,6 +11265,7 @@ HandMorph.prototype.init = function (aWorld) {
     // properties for caching dragged objects:
     this.cachedFullImage = null;
     this.cachedFullBounds = null;
+    this.cursorStyle = 'auto';
 };
 
 // HandMorph dragging optimizations:
@@ -11605,6 +11607,8 @@ HandMorph.prototype.processMouseMove = function (event) {
         mouseOverBoundsNew,
         morph,
         topMorph;
+    
+    this.cursorStyle = null;
 
     pos = new Point(
         event.pageX - posInDocument.x,
@@ -11654,6 +11658,7 @@ HandMorph.prototype.processMouseMove = function (event) {
             }
             this.setPosition(pos);
         }
+        this.cursorStyle = morph.cursorStyle;
     }
 
     this.mouseOverBounds.forEach(old => {
@@ -11709,6 +11714,18 @@ HandMorph.prototype.processMouseMove = function (event) {
     });
     this.mouseOverList = mouseOverNew;
     this.mouseOverBounds = mouseOverBoundsNew;
+
+    if (this.cursorStyle == null) {
+        this.cursorStyle = 'auto';
+    
+        for (const morph of this.mouseOverList) {
+            if (morph.cursorStyle != null) {
+                this.cursorStyle = morph.cursorStyle;
+                break;
+            }
+        }
+    }
+    this.world.worldCanvas.style.cursor = this.cursorStyle;
 };
 
 HandMorph.prototype.processMouseScroll = function (event) {
