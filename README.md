@@ -7,7 +7,7 @@ inspired by Squeak
 written by Jens Mönig  
 jens@moenig.org
 
-Copyright (C) 2010-2023 by Jens Mönig
+Copyright (C) 2010-2024 by Jens Mönig
 
 Morphic.js is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
