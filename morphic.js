@@ -1180,7 +1180,7 @@
 
         newCanvas(extentPoint [, nonRetinaFlag])
 
-    If retina support is enabled such new canvasses will automatically be
+    If retina support is enabled such new canvases will automatically be
     high-resolution canvasses, unless the newCanvas() function is given an
     otherwise optional second Boolean <true> argument that explicitly makes
     it a non-retina canvas.
