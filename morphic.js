@@ -1320,7 +1320,7 @@
 
 /*jshint esversion: 11, bitwise: false*/
 
-var morphicVersion = '2024-June-04';
+var morphicVersion = '2024-August-06';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = true;
 
@@ -1631,7 +1631,7 @@ function embedMetadataPNG(aCanvas, aString) {
             embedTag
         );
     try {
-        bPart.splice(-12, 0, ...newChunk);
+        bPart = bPart.slice(0, -12).concat( newChunk.split(""), bPart.slice( -12));
         parts[1] = btoa(bPart.join(""));
     } catch (err) {
         console.log(err);
