@@ -9,7 +9,7 @@
 
     Copyright (C) 2010-2024 by Jens Mönig
 
-    This documentation last changed: June 04, 2024
+    This documentation last changed: October 09, 2024
     
     This file is part of Snap!.
 
@@ -1242,6 +1242,24 @@
         slideBackTo()
 
     are implemented.
+
+    Animations can also be used to schedule a function execution just once
+    in lockstep with the Morphic scheduler, avoiding the setTimeout() pattern.
+    A syntactic shortcut for single-time scheduling exists in the WorldMorph's
+
+        schedule()
+
+    method.
+
+    For usage examples look at how TriggerMorph implements
+
+        bubbleHelp()
+
+    or at MenuItemMorph's
+
+        delaySubmenu()
+
+    method.
 
 
     (10) minifying morphic.js
