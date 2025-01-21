@@ -7,9 +7,9 @@
     written by Jens Mönig
     jens@moenig.org
 
-    Copyright (C) 2010-2024 by Jens Mönig
+    Copyright (C) 2010-2025 by Jens Mönig
 
-    This documentation last changed: October 09, 2024
+    This documentation last changed: January 21, 2025
     
     This file is part of Snap!.
 
