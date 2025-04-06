@@ -1351,14 +1351,14 @@
 
 /*jshint esversion: 11, bitwise: false*/
 
-var morphicVersion = '2025-March-20';
-var modules = {}; // keep track of additional loaded modules
-var useBlurredShadows = true;
+export var morphicVersion = '2025-March-20';
+export var modules = {}; // keep track of additional loaded modules
+export var useBlurredShadows = true;
 
-const ZERO = new Point();
-const BLACK = new Color();
-const WHITE = new Color(255, 255, 255);
-const CLEAR = new Color(0, 0, 0, 0);
+export const ZERO = new Point();
+export const BLACK = new Color();
+export const WHITE = new Color(255, 255, 255);
+export const CLEAR = new Color(0, 0, 0, 0);
 
 Object.freeze(ZERO);
 Object.freeze(BLACK);
@@ -1407,7 +1407,7 @@ var touchScreenSettings = {
     showHoles: false
 };
 
-var MorphicPreferences = standardSettings;
+export var MorphicPreferences = standardSettings;
 
 // first, try enabling support for retina displays - can be turned off later
 
@@ -2074,7 +2074,7 @@ function normalizeCanvas(aCanvas, getCopy) {
 
 // Animation instance creation:
 
-function Animation(setter, getter, delta, duration, easing, onComplete) {
+export function Animation(setter, getter, delta, duration, easing, onComplete) {
     this.setter = setter; // function
     this.getter = getter; // function
     this.delta = delta || 0; // number
@@ -2148,7 +2148,7 @@ Animation.prototype.step = function () {
 
 // Color instance creation:
 
-function Color(r, g, b, a) {
+export function Color(r, g, b, a) {
     // all values are optional, just (r, g, b) is fine
     this.r = r || 0;
     this.g = g || 0;
@@ -2436,7 +2436,7 @@ Color.prototype.solid = function () {
 
 // Point instance creation:
 
-function Point(x, y) {
+export function Point(x, y) {
     this.x = x || 0;
     this.y = y || 0;
 }
@@ -2694,7 +2694,7 @@ Point.prototype.asArray = function () {
 
 // Rectangle instance creation:
 
-function Rectangle(left, top, right, bottom) {
+export function Rectangle(left, top, right, bottom) {
     this.init(new Point((left || 0), (top || 0)),
             new Point((right || 0), (bottom || 0)));
 }
@@ -3076,7 +3076,7 @@ Rectangle.prototype.asArray_xywh = function () {
 
 // Node instance creation:
 
-function Node(parent, childrenArray) {
+export function Node(parent, childrenArray) {
     this.init(parent || null, childrenArray || []);
 }
 
@@ -3237,20 +3237,20 @@ Node.prototype.childThatIsA = function () {
 
 // Morph: referenced constructors
 
-var Morph;
-var WorldMorph;
-var HandMorph;
-var ShadowMorph;
-var FrameMorph;
-var MenuMorph;
-var HandleMorph;
-var StringFieldMorph;
-var ColorPickerMorph;
-var SliderMorph;
-var ScrollFrameMorph;
-var InspectorMorph;
-var StringMorph;
-var TextMorph;
+export var Morph;
+export var WorldMorph;
+export var HandMorph;
+export var ShadowMorph;
+export var FrameMorph;
+export var MenuMorph;
+export var HandleMorph;
+export var StringFieldMorph;
+export var ColorPickerMorph;
+export var SliderMorph;
+export var ScrollFrameMorph;
+export var InspectorMorph;
+export var StringMorph;
+export var TextMorph;
 
 // Morph inherits from Node:
 
@@ -5154,7 +5154,7 @@ HandleMorph.prototype.attach = function () {
 
 // PenMorph: referenced constructors
 
-var PenMorph;
+export var PenMorph;
 
 // PenMorph inherits from Morph:
 
@@ -5413,7 +5413,7 @@ PenMorph.prototype.tree = function (level, length, angle) {
 
 // ColorPaletteMorph ///////////////////////////////////////////////////
 
-var ColorPaletteMorph;
+export var ColorPaletteMorph;
 
 // ColorPaletteMorph inherits from Morph:
 
@@ -5524,7 +5524,7 @@ ColorPaletteMorph.prototype.setTargetSetter = function () {
 
 // GrayPaletteMorph ///////////////////////////////////////////////////
 
-var GrayPaletteMorph;
+export var GrayPaletteMorph;
 
 // GrayPaletteMorph inherits from ColorPaletteMorph:
 
@@ -5614,7 +5614,7 @@ ColorPickerMorph.prototype.rootForGrab = function () {
 
 // can be used for text cursors
 
-var BlinkerMorph;
+export var BlinkerMorph;
 
 // BlinkerMorph inherits from Morph:
 
@@ -5646,7 +5646,7 @@ BlinkerMorph.prototype.step = function () {
 
 // CursorMorph: referenced constructors
 
-var CursorMorph;
+export var CursorMorph;
 
 // CursorMorph inherits from BlinkerMorph:
 
@@ -5994,7 +5994,7 @@ CursorMorph.prototype.destroy = function () {
 
 // I can have an optionally rounded border
 
-var BoxMorph;
+export var BoxMorph;
 
 // BoxMorph inherits from Morph:
 
@@ -6165,7 +6165,7 @@ BoxMorph.prototype.numericalSetters = function () {
 
 // SpeechBubbleMorph: referenced constructors
 
-var SpeechBubbleMorph;
+export var SpeechBubbleMorph;
 
 // SpeechBubbleMorph inherits from BoxMorph:
 
@@ -6498,7 +6498,7 @@ SpeechBubbleMorph.prototype.shadowImageBlurred = function (off, color) {
 
 // I am a knob than can be turned to select a number
 
-var DialMorph;
+export var DialMorph;
 
 // DialMorph inherits from Morph:
 
@@ -6792,7 +6792,7 @@ DialMorph.prototype.updateTarget = function () {
 
 // I can be used for sliders
 
-var CircleBoxMorph;
+export var CircleBoxMorph;
 
 // CircleBoxMorph inherits from Morph:
 
@@ -6868,7 +6868,7 @@ CircleBoxMorph.prototype.toggleOrientation = function () {
 
 // SliderButtonMorph ///////////////////////////////////////////////////
 
-var SliderButtonMorph;
+export var SliderButtonMorph;
 
 // SliderButtonMorph inherits from CircleBoxMorph:
 
@@ -7408,7 +7408,7 @@ SliderMorph.prototype.mouseMove = function (pos) {
 
 // for demo and debuggin purposes only, to be removed later
 
-var MouseSensorMorph;
+export var MouseSensorMorph;
 
 // MouseSensorMorph inherits from BoxMorph:
 
@@ -7478,8 +7478,8 @@ MouseSensorMorph.prototype.mouseClickLeft = function () {
 
 // InspectorMorph: referenced constructors
 
-var ListMorph;
-var TriggerMorph;
+export var ListMorph;
+export var TriggerMorph;
 
 // InspectorMorph inherits from BoxMorph:
 
@@ -7950,7 +7950,7 @@ InspectorMorph.prototype.updateReferences = function (map) {
 
 // MenuMorph: referenced constructors
 
-var MenuItemMorph;
+export var MenuItemMorph;
 
 // MenuMorph inherits from BoxMorph:
 
@@ -10009,7 +10009,7 @@ TriggerMorph.prototype.popUpbubbleHelp = function (contents) {
 
 // I automatically determine my bounds
 
-var MenuItemMorph;
+export var MenuItemMorph;
 
 // MenuItemMorph inherits from TriggerMorph:
 
@@ -11084,7 +11084,7 @@ StringFieldMorph.prototype.mouseClickLeft = function (pos) {
 
 // I am a Demo of a stepping custom Morph
 
-var BouncerMorph;
+export var BouncerMorph;
 
 // Bouncers inherit from Morph:
 
