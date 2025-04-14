@@ -4570,6 +4570,11 @@ Morph.prototype.developersMenu = function () {
         'open a window\non all properties'
     );
     menu.addItem(
+        "log in console...",
+        function() { console.log("Snap!",this); },
+        'log this morph to console'
+    );
+    menu.addItem(
         "pic...",
         () => {
             var imgURL = this.fullImage().toDataURL(),
