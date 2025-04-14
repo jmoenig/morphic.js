@@ -11676,21 +11676,24 @@ HandMorph.prototype.processMouseMove = function (event) {
 };
 
 HandMorph.prototype.processMouseScroll = function (event) {
-    var morph = this.morphAtPointer();
+    var morph = this.morphAtPointer(),
+        shiftPressed = this.world.currentKey === 16;
     while (morph && !morph.mouseScroll) {
         morph = morph.parent;
     }
-    if (morph) {
-        morph.mouseScroll(
-            (event.detail / -3) || (
+    let y = (event.detail / -3) || (
                 Object.prototype.hasOwnProperty.call(
                     event,
                     'wheelDeltaY'
                 ) ?
                         event.wheelDeltaY / 120 :
                         event.wheelDelta / 120
-            ),
-            event.wheelDeltaX / 120 || 0
+            )
+    let x = event.wheelDeltaX / 120 || 0
+    if (morph) {
+        morph.mouseScroll(
+            shiftPressed ? x : y,
+            shiftPressed ? y : x,
         );
     }
 };
