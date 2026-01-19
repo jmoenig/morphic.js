@@ -827,7 +827,7 @@
     original one received by the World or by the IME element.
 
     Note that the "reactToKeystroke" event gets triggered before the input
-    changes, and thus befgore the "reactToInput" event fires.
+    changes, and thus before the "reactToInput" event fires.
 
     Once the user has completed the edit, the following events are
     dispatched:
@@ -921,7 +921,7 @@
 
     When you create your own morphs, you'll want to think about how to
     graphically render it, how to determine its size and whether it needs
-    to arrange any other parts ("submorphs). There are also ways to specify
+    to arrange any other parts ("submorphs"). There are also ways to specify
     its collision detection behavior and define "untouchable" regions
     ("holes").
 
