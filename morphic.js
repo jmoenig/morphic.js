@@ -1139,7 +1139,7 @@
         penTrails()
 
     property, so that it keeps a separate offscreen canvas for pen
-    trails (and doesn't loose these on redraw).
+    trails (and doesn't lose these on redraw).
 
     the following properties of PenMorph are relevant for turtle
     graphics:
