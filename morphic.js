@@ -1367,7 +1367,7 @@
 
 /*jshint esversion: 11, bitwise: false*/
 
-var morphicVersion = '2026-February-21';
+var morphicVersion = '2026-April-22';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = true;
 var ZOOM = 1;
@@ -12103,9 +12103,12 @@ WorldMorph.prototype.fullDrawOn = function (aContext, aRect) {
 };
 
 WorldMorph.prototype.updateBroken = function () {
-    var ctx = this.worldCanvas.getContext('2d');
+    var ctx = this.worldCanvas.getContext('2d'),
+        i;
     this.condenseDamages();
-    ctx.restore(); // make sure to hit rock-bottom scale
+    for (i = 0; i < 4; i += 1) { // kludge alert:
+        ctx.restore(); // make sure to hit rock-bottom scale
+    }
     ctx.save();
     ctx.scale(ZOOM, ZOOM);
     this.broken.forEach(rect => {
