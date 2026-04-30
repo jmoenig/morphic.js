@@ -1289,9 +1289,9 @@
 
     method.
 
-    Animation can further be used to schedule a function execution dynamically
+    Animations can further be used to schedule a function execution dynamically
     once a condition has been met, avoiding the need to specify an event or
-    a Promise. A syntactic shortcut for single-time conditional scheduling
+    a promise. A syntactic shortcut for single-time conditional scheduling
     exists in the WorldMorph's
 
         once()
