@@ -7,9 +7,9 @@
     written by Jens Mönig
     jens@moenig.org
 
-    Copyright (C) 2010-2025 by Jens Mönig
+    Copyright (C) 2010-2026 by Jens Mönig
 
-    This documentation last changed: November 25, 2025
+    This documentation last changed: April 30, 2026
     
     This file is part of Snap!.
 
@@ -1287,6 +1287,15 @@
     or at MenuItemMorph's
 
         delaySubmenu()
+
+    method.
+
+    Animations can further be used to schedule a function execution dynamically
+    once a condition has been met, avoiding the need to specify an event or
+    a promise. A syntactic shortcut for single-time conditional scheduling
+    exists in the WorldMorph's
+
+        once()
 
     method.
 
