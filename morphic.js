@@ -8138,7 +8138,7 @@ MenuMorph.prototype.addSectionLabel = function (labelText) {
         null, // isNumeric
         null, // shadowOffset
         null, // shadowColor
-        new Color(150, 150, 150),
+        new Color(170, 170, 170),
         null // fontName
     ));
 };
