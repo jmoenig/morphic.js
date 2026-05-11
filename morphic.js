@@ -1376,7 +1376,7 @@
 
 /*jshint esversion: 11, bitwise: false*/
 
-var morphicVersion = '2026-April-30';
+var morphicVersion = '2026-May-11';
 var modules = {}; // keep track of additional loaded modules
 var useBlurredShadows = true;
 var ZOOM = 1;
@@ -8128,6 +8128,21 @@ MenuMorph.prototype.addLine = function (width) {
     this.items.push([0, width || 1]);
 };
 
+MenuMorph.prototype.addSectionLabel = function (labelText) {
+    this.items.push(new StringMorph(
+        localize(labelText),
+        (this.fontSize || MorphicPreferences.menuFontSize) * 0.85,
+        null, // fontStyle
+        true, // bold
+        null, // italic
+        null, // isNumeric
+        null, // shadowOffset
+        null, // shadowColor
+        new Color(150, 150, 150),
+        null // fontName
+    ));
+};
+
 MenuMorph.prototype.createLabel = function () {
     var text;
     if (this.label !== null) {
@@ -8189,6 +8204,7 @@ MenuMorph.prototype.createItems = function () {
     this.items.forEach(tuple => {
         isLine = false;
         if (tuple instanceof StringFieldMorph ||
+                tuple instanceof StringMorph ||
                 tuple instanceof ColorPickerMorph ||
                 tuple instanceof SliderMorph ||
                 tuple instanceof DialMorph) {
@@ -8216,12 +8232,19 @@ MenuMorph.prototype.createItems = function () {
         }
         if (isLine) {
             y += 1;
+        } else if (item instanceof StringMorph) {
+            y += item.height() / 4;
         }
-        item.setPosition(new Point(x, y));
+        item.setPosition(new Point(
+            item instanceof StringMorph ? x + 4 : x,
+            y
+        ));
         this.add(item);
         y = y + item.height();
         if (isLine) {
             y += 1;
+        } else if (item instanceof StringMorph) {
+            y += item.height() / 4;
         }
     });
 
@@ -8246,6 +8269,7 @@ MenuMorph.prototype.maxWidth = function () {
                     (item.shortcut ? item.shortcut.width() + 4 : 0)
             );
         } else if ((item instanceof StringFieldMorph) ||
+                (item instanceof StringMorph) ||
                 (item instanceof ColorPickerMorph) ||
                 (item instanceof SliderMorph) ||
                 (item instanceof DialMorph)) {
