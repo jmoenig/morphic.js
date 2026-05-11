@@ -8243,8 +8243,6 @@ MenuMorph.prototype.createItems = function () {
         y = y + item.height();
         if (isLine) {
             y += 1;
-        } else if (item instanceof StringMorph) {
-            y += item.height() / 4;
         }
     });
 
